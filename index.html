@@ -1,0 +1,2420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShelfWise - Personal Book Tracker</title>
+    
+	<link href="https://googleapis.com" rel="stylesheet">
+    <link rel="icon" href="http://googleusercontent.com/image_generation_content/0">
+	<link rel="canonical" href="https://icons.getbootstrap.com/icons/eye-fill/">
+
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --card-bg-muted: #1d232a;
+            --text-color: #c9d1d9;
+            --text-bright: #f0f6fc;
+            --text-muted: #8b949e;
+            --accent-color: #58a6ff;
+            --input-bg: #0d1117;
+            --border-color: #30363d;
+            --read-color:#58ff7d;
+            --reading-color: #d29922;
+            --unread-color: #ff7b72;
+            --unread-bg-color: #f851491a;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+			width: 90%;
+            max-width: 950px;
+			margin-left: auto;
+			margin-right: auto;
+        }
+
+        h1 {
+	        font-family: "Goudy Old Style", sans-serif;
+	        color: var(--text-bright);
+	        margin-top: 15px;
+			margin-bottom: 0px;
+            font-size: 3.5rem;
+	        font-weight: 600;
+            letter-spacing: 0px;
+        }
+		
+		.headline {
+            border-bottom: 2px solid #c6c07f;
+            margin-bottom: 2px;
+        }
+        
+        h1 span { 
+			color: #c6c07f; 
+			margin-left: 0px;
+		}
+		
+        .tagline {
+			font-family: "Helvetica", sans-serif;
+            font-style: italic;
+            font-size: 10pt;
+            text-align: center;
+            color: #f6f8d6;
+            padding-top: 10px;
+            border-top: 1px solid #c6c27f;
+            margin-bottom: 10px;
+			padding-bottom: 10px;
+            margin: 5px;
+		}
+  
+		h2 {
+			font-family: "Helvetica", sans-serif;
+		}
+		
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            display: flex; 
+            justify-content: center; 
+            flex-wrap: nowrap; 
+            margin-bottom: 20px; 
+            padding: 15px; 
+            text-align: center; 
+            gap: 10px; 
+            align-items: center; 
+            width: 65%;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: var(--text-bright);
+            border-bottom: 1px solid var(--border-color);
+            /* padding-bottom: 10px; */
+            font-weight: 500;
+        }
+
+        .rating-div {
+            font-size: larger; 
+            text-align: right;
+            color: rgb(255, 255, 142);
+        }
+        
+        label {
+            font-size: 11pt; 
+            color: var(--text-color);
+            margin-bottom: 0px;
+        }
+
+        .stats-element {
+            flex: 1; 
+            min-width: 80px;
+            max-width: 120px;
+        }
+
+        .stats-num {
+            font-size: 24px; 
+            font-weight: bold; 
+            color: var(--text-bright);
+        }
+
+        .stats-label {
+            font-size: 16px; 
+            color: var(--text-color);
+        }
+
+        /* Form & Input Styling */
+        .form-group {
+            display: grid;
+			/* grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); */
+            grid-template-columns: 1fr 1fr 125px 150px;
+            gap: 15px;
+            margin-bottom: 10px;
+            margin-top: 15px;
+        }
+		
+		.form_field_title {
+			font-size: 0.9rem; 
+			color: var(--text-color);
+		}
+
+        .isbn-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .isbn-group input {
+            flex: 1;
+        }
+
+        input, select, button, textarea {
+            padding: 10px;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            color: var(--text-bright);
+        }
+
+        input::placeholder {
+            color: #484f58;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+
+        button {
+            background-color: #21262d;
+            color: #d7aa60;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+            color: #0d1117;
+            border-color: var(--accent-color);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #21262d !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        .submit-button {
+            color: var(--text-bright);
+            background-color: #238636;
+            border-color: #2ea043;
+            width: 150px;
+        }
+
+        .search-button {
+            color: var(--text-bright);
+            background-color: #238636;
+            border-color: #2ea043;
+        }
+
+        /* Settings Modal Buttons */
+        .settings-button {
+            background-color: #21262d;
+            color: var(--text-bright);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .settings-button:hover {
+            background-color: var(--accent-color);
+            color: #0d1117;
+            border-color: var(--accent-color);
+        }
+
+        .settings-delete-button {
+            background-color: #f85149;
+            color: var(--text-bright);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+		.flex-container {
+			display: flex;
+			justify-content: center; /* Centers horizontally */
+			align-items: center;     /* Centers vertically */
+		}
+
+        /* Button styling */
+        .toggle-btn {
+            padding: 6px 0px;
+            font-size: 15pt;
+            cursor: pointer;
+			width: 90px; 
+            min-width: fit-content;
+			color: white; 
+			background-color: #238636; 
+			border-color: #2ea043;
+        }
+
+        /* The collapsible container */
+        .content {
+            max-height: 0;            /* Hidden by default */
+            overflow: hidden;         /* Keeps content from spilling out */
+            transition: max-height 0.4s ease-out; /* Smooth transition effect */
+            border-color: var(--border-color);
+        }
+
+        /* Padding goes inside an inner wrapper to prevent jerky animations */
+        .inner-content {
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+
+        /* Control Bar (Search, Filter, Sort) */
+        .controls-bar {
+            display: flex;
+            gap: 10px 15px;
+            flex-wrap: wrap;
+			align-items: center;
+			border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .controls-bar input, .controls-bar select {
+            flex: 1;
+            min-width: 100px;
+            font-size: 10pt;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* margin-top: 10px; */
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #161b22;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 12pt;
+        }
+
+        /* tr:hover {
+            background-color: #1f242c;
+        }
+
+        tr:hover .action-btns{
+            opacity: 1;;
+        }         */
+
+        /* Cover Image Styling */
+        .cover-img {
+            width: 65px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            cursor: pointer;
+        }
+
+        .no-cover {
+            width: 45px;
+            height: 65px;
+            background-color: #21262d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-align: center;
+            border: 1px dashed var(--border-color);
+            line-height: 1.2;
+        }
+
+        /* Large Cover View Styling */
+        .large-cover-img {
+            max-width: 100%;
+            max-height: 350px;
+            object-fit: contain;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .large-no-cover {
+            width: 200px;
+            height: 300px;
+            background-color: #21262d;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--text-muted);
+            text-align: center;
+            border: 2px dashed var(--border-color);
+            margin: 0 auto;
+        }
+
+        .table-author {
+             font-size: 1rem; 
+             font-style: italic;
+             color: var(--text-color);
+        }
+
+        .view-author {
+             font-style: italic; 
+             text-align: left; 
+             color: var(--text-color); 
+             margin-top: 0; 
+             font-size: 14px;
+        }
+
+        /* Status, Format and Rating Badges */
+        .status-badge {
+            padding: 4px 15px;
+            border-radius: 20px;
+            font-size: 10.5pt;
+            font-weight: 600;
+            border: 1px solid transparent;
+            display: inline-block;
+        }
+
+        .status-unread { background: #f851491a; color: var(--unread-color); border-color: rgba(248, 81, 73, 0.2); }
+        .status-reading { background: rgba(210, 153, 34, 0.1); color: var(--reading-color); border-color: rgba(210, 153, 34, 0.2); }
+        .status-read { background: rgba(56, 253, 133, 0.1); color: var(--read-color); border-color: rgba(56, 253, 108, 0.2); }
+
+        .format-label {
+            font-size: 10.5pt;
+            color: var(--text-muted);
+            background: #21262d;
+            padding: 4px 15px;
+            border: 1pt solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .rated { color: var(--text-color); }
+        .unrated { color: var(--text-muted); }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            flex-direction: row;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .view-btn, .edit-btn, .delete-btn {
+            display: flex;
+            align-items: center;
+            place-content: center;
+            padding: 5px 12px;
+            font-size: 9pt;
+            width: 150px;
+        }
+
+        .main-row td {
+            border-bottom: none; /* Removes line between main and action row */
+            padding-bottom: 2px;
+        }
+
+        .action-row td {
+            padding: 5px 0px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .view-btn {
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .view-btn:hover { background-color: #58a6ff; color: #0d1117; border-color: #58a6ff; }
+
+        .edit-btn {
+            color: #d29922;
+            border: 1px solid rgba(210, 153, 34, 0.3);
+        }
+
+        .edit-btn:hover { background-color: #d29922; color: #0d1117; border-color: #d29922; }
+
+        .delete-btn {
+            color: #f85149;
+            border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+
+        .delete-btn:hover { background-color: #f85149; color: white; border-color: #f85149; }
+
+        /* API Status Message */
+        .api-status {
+            font-size: 15px;
+            text-align: center;
+        }
+
+        /* Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 25px; border-radius: 8px;
+            width: 90%; max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            transform: scale(0.9); transition: transform 0.2s ease-in-out;
+        }
+
+        .modal-overlay.active .modal-content { transform: scale(1); }
+
+        .modal-actions {
+            display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;
+        }
+
+        .cancel-btn { 
+            background-color: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border-color);
+            width: 150px;
+        }
+
+        .cancel-btn:hover { 
+            background-color: #21262d; 
+            color: var(--text-bright); 
+        }
+
+        summary {
+            cursor: pointer;
+        }
+        
+        /* 3-line truncation style using modern WebKit rules */
+        .content-text {
+            display: -webkit-box;
+            line-clamp: unset;
+            -webkit-line-clamp: 3; /* Limits display to exactly 3 lines */
+            -webkit-box-orient: vertical;  
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 5px;
+            margin-bottom: 0px;
+            margin-right: 13px;
+            font-size: 11.5pt;
+            overflow-y: auto; /* Add vertical scroll bar if content exceeds height */
+        }
+
+        /* Revealed style when toggle is active */
+        .content-text.expanded {
+            display: block; /* Removes the line clamp restriction */
+            max-height: 220px; /* Restrict height to 400px */
+            overflow-y: auto; /* Add vertical scroll bar if content exceeds height */
+            padding-right: 5px; /* Prevent text from sitting too close to the scroll bar */
+        }
+
+        /* Stylized action link */
+        .toggle-action-link {
+            color: var(--text-color);
+            cursor: pointer;
+            margin-top: 3px;
+            font-weight: bold;
+            font-size: 14px;
+            text-decoration: underline;
+            font-family: inherit;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .divider-container {
+            display: flex;
+            align-items: center; 
+            width: 100%;
+        }
+
+        .line-segment {
+            flex-grow: 1;
+            height: 20px; /* Reduced box height to match the smaller graphics */
+        }
+
+        .center-content {
+            color: #c9d1d9;
+            padding: 0 15px; /* Slightly tighter spacing to match petite look */
+            font-size: 0.9rem; /* Smaller text size to complement thin lines */
+            white-space: nowrap; 
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* Clickable Tag Pills */
+        .tag-pill {
+            background: #21262d;
+            color: var(--accent-color);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10pt;
+            margin-right: 6px;
+            display: inline-block;
+            border: 1px solid var(--border-color);
+            margin-top: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tag-pill:hover {
+            background: var(--accent-color);
+            color: #0d1117;
+        }
+
+        /* Grouping Headers */
+        .group-header {
+            background-color: var(--card-bg-muted);
+            color: var(--text-bright);
+            font-weight: 600;
+            font-size: 13pt;
+            padding: 2px 15px;
+            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Utility class to hide collapsed rows */
+        .hidden-row {
+            display: none !important;
+        }
+
+        /* --- Pagination Controls Styling --- */
+        .pagination-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding-top: 15px;
+            margin-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .pagination-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap; /* Allows page number buttons to wrap neatly */
+        }
+
+        .page-btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            min-width: 32px;
+            border-radius: 4px;
+        }
+
+        .page-btn.active {
+            background-color: #238636;
+            color: white;
+            border-color: #2ea043;
+        }
+
+        /* Custom Scrollbars */
+        html {
+            /* Firefox & Modern CSS Standard */
+            scrollbar-color: var(--text-muted) #161b22; 
+            scrollbar-width: auto; /* Can be 'auto', 'thin', or 'none' */
+        }
+
+        /* Chrome, Edge, Safari */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #161b22;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--card-bg-muted);
+        }
+
+		footer {
+	        font-family: sans-serif;
+			background-color: var(--bg-color);
+			text-align: center;
+	        color: #f6f8d6;
+			padding: 10px;
+		}
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="headline">
+        <h1>
+            <div style="display: flex; justify-content: space-between;">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#f6f8d6" class="bi bi-bookshelf" viewBox="0 0 16 16">
+                        <path d="M2.5 0a.5.5 0 0 1 .5.5V2h10V.5a.5.5 0 0 1 1 0v15a.5.5 0 0 1-1 0V15H3v.5a.5.5 0 0 1-1 0V.5a.5.5 0 0 1 .5-.5M3 14h10v-3H3zm0-4h10V7H3zm0-4h10V3H3z"/>
+                    </svg>Shelf<span>Wise</span>
+                </div>
+                <!-- Settings Button -->
+                <div style="display: flex; align-items: center;">
+                    <button title="Library Settings" class="toggle-btn" onclick="openSettingsModal()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </h1>
+    </div>
+
+	<div class="tagline" style="border-top: 0px; margin: 0px 25px; font-family: 'Goudy', sans-serif; font-size: 13pt; font-style: normal; font-weight: normal; color: #f6f8d6;">
+        ~ Your personal library... beautifully catalogued ~
+    </div>
+	
+    <!-- Library Statistics -->
+    <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+        <!-- LEFT SVG LINE SEGMENT (Smaller & Thinner) -->
+        <div class="line-segment" style="margin-right: 40px; max-width: 80px;">
+            <svg width="100%" height="100%" overflow="visible" xmlns="http://w3.org">
+                <defs>
+                <!-- Tiny Dot Marker (shrunk from r=3 to r=1.5) -->
+                <marker id="left-dot" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto" overflow="visible">
+                    <circle cx="2" cy="2" r="2.5" fill="#c9d1d9" />
+                </marker>
+
+                <!-- Small & Refined Double Diamond Marker -->
+                <!-- Scaled down from 30x20 to 18x12 with tighter inline space -->
+                <marker id="left-diamonds" markerWidth="20" markerHeight="12" refX="11" refY="6" orient="auto-start-reverse" overflow="visible">
+                    <!-- Outside Smaller Diamond -->
+                    <path d="M 0,6 L 3,3 L 6,6 L 3,9 Z" fill="#c9d1d9" />
+                    <!-- Inside Larger Diamond (Closest to center text) -->
+                    <path d="M 11,6 L 16,1 L 21,6 L 16,11 Z" fill="#c9d1d9" />
+                </marker>
+                </defs>
+                <!-- Thinned Line (stroke-width changed from 3 to 1) -->
+                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#c9d1d9" stroke-width="1" 
+                    marker-start="url(#left-dot)" 
+                    marker-end="url(#left-diamonds)" />
+            </svg>
+        </div>
+        <div class="stats-card" style="margin-bottom: 0px;">
+            <div class="stats-element">
+                <div class="stats-num" id="statTotal">0</div>
+                <div class="stats-label" style="color: var(--accent-color);">Total Books</div>
+            </div>
+            <div class="stats-element">
+                <div class="stats-num" id="statRead">0</div>
+                <div class="stats-label" style="color: var(--read-color);">Read</div>
+            </div>
+            <div class="stats-element">
+                <div class="stats-num" id="statReading">0</div>
+                <div class="stats-label" style="color: var(--reading-color);">Reading</div>
+            </div>
+            <div class="stats-element">
+                <div class="stats-num" id="statUnread">0</div>
+                <div class="stats-label" style="color: var(--unread-color);">Unread</div>
+            </div>
+            <div class="stats-element">
+                <div class="stats-num" id="statAvgRating">0.0</div>
+                <div class="stats-label" style="color: #f6f8d6;">Avg Rating</div>
+            </div>
+        </div>
+        <!-- RIGHT SVG LINE SEGMENT (Smaller & Thinner) -->
+        <div class="line-segment" style="margin-left: 40px; max-width: 80px;">
+            <svg width="100%" height="100%" overflow="visible" xmlns="http://w3.org">
+                <defs>
+                <!-- Tiny Dot Marker -->
+                <marker id="right-dot" markerWidth="4" markerHeight="4" refX="2" refY="2" orient="auto" overflow="visible">
+                    <circle cx="2" cy="2" r="2.5" fill="#c9d1d9" />
+                </marker>
+
+                <!-- Small & Refined Double Diamond Marker -->
+                <marker id="right-diamonds" markerWidth="20" markerHeight="12" refX="11" refY="6" orient="auto-start-reverse" overflow="visible">
+                    <!-- Inside Larger Diamond (Closest to center text) -->
+                    <path d="M 11,6 L 16,1 L 21,6 L 16,11 Z" fill="#c9d1d9" />
+                    <!-- Outside Smaller Diamond -->
+                    <path d="M 0,6 L 3,3 L 6,6 L 3,9 Z" fill="#c9d1d9" />
+                </marker>
+                </defs>
+                <!-- Thinned Line (stroke-width changed from 3 to 1) -->
+                <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#c9d1d9" stroke-width="1" 
+                    marker-start="url(#right-diamonds)" 
+                    marker-end="url(#right-dot)" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Duplicate Book Modal -->
+    <div class="modal-overlay" id="duplicateWarningModal">
+        <div class="modal-content" style="max-width: 500px; text-align: center; margin-top: 1px;">
+            <h3 style="border-bottom: none; margin-bottom: 10px; color: #d29922;">
+                Duplicate Book Detected
+            </h3>
+            <p style="font-size: 14px; color: var(--text-color); margin-bottom: 20px;">
+                A book with the exact same <strong>Title</strong>, <strong>Author</strong>, and <strong>Format</strong> already exists in your library. Do you still want to add it?
+            </p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" class="cancel-btn" style="width: 150px;" onclick="closeDuplicateModal()">Cancel</button>
+                <button type="button" id="confirmDuplicateBtn" style="width: 150px; background-color: #238636; color: white; border-color: #2ea043;">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Bookshelf -->
+    <div class="card">
+        <div style="margin-bottom: 10px;">
+            <h3 style="margin-bottom: 0px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    
+                    <!-- Left Side: Header -->
+                    <div style="display: flex; align-items: center;">
+                        <div style="font-size: 18pt; margin-left: 10px;">My Bookshelf</div>
+                    </div>
+
+                    <!-- Right Side: Add Book Button -->
+                    <div style="text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                        <!-- Add a Book [ + ] Button -->
+                        <button title=" Add a Book " class="toggle-btn" onclick="toggleSlide()"> + </button>
+                    </div>
+                </div>
+            </h3>
+
+            <!-- New Book -->
+            <!-- Collapsible Content -->
+            <div id="collapsibleDiv" class="content">
+                <div class="inner-content" style="border: 0px; border-bottom: 1px solid var(--border-color);">
+                    <div class="card" style="margin-bottom: 0px; background: var(--card-bg-muted);">				
+                        <div style="display:flex; flex-direction: row; margin-bottom: 5px; gap: 15px; justify-content: space-between;">
+                            <!-- Quick Add via ISBN -->
+                            <div style="display:grid; flex-direction: column;">
+                                <label style="display: block; margin-bottom: 5px; color: #f6f8d6;">Quick Add via ISBN</label>
+                                <div class="isbn-group" style="align-items: center; margin-bottom: 0;">
+                                    <input type="text" id="isbnInput" onfocus="document.getElementById('apiStatusMessage').textContent='';" placeholder="e.g., 9780141439518">
+                                    <button type="button" class="search-button" id="fetchIsbnBtn" onclick="fetchBookByIsbn()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#d6f8d6" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Quick Search via Title/Author -->
+                            <div style="display: grid; width: 100%; border-left: 1px solid var(--border-color); padding-left: 10px;">
+                                <label style="display: block; margin-bottom: 5px; color: #f6f8d6;">Search Web by Title & Author</label>
+                                <div class="isbn-group" style="align-items: center; margin-bottom: 0;">
+                                    <input type="text" id="searchTitleInput" onfocus="document.getElementById('apiStatusMessage').textContent='';" placeholder="Search Title">
+                                    <input type="text" id="searchAuthorInput" onfocus="document.getElementById('apiStatusMessage').textContent='';" placeholder="Search Author (Opt.)">
+                                    <button type="button" class="search-button" id="fetchTitleBtn" onclick="fetchBookByTitleAuthor()">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#d6f8d6" class="bi bi-search" viewBox="0 0 16 16">
+                                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="apiStatusMessage" class="api-status" style="width: 100%; text-align: center; margin-bottom: 15px;"></div>
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 5px 0;">
+
+                        <form id="bookForm">
+                            <!-- Hidden ISBN fields -->
+                            <input type="hidden" id="bookIsbn10" value="">
+                            <input type="hidden" id="bookIsbn13" value="">
+                            
+                            <div class="form-group">
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="title">Title *</label>
+                                    <input type="text" id="title" style="width:100%; box-sizing: border-box;" required>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="author">Author *</label>
+                                    <input type="text" id="author" style="width:100%; box-sizing: border-box;" required>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="format">Format</label>
+                                    <select id="format" style="width:100%; box-sizing: border-box;">
+                                        <option value="Unknown">Unknown</option>
+                                        <option value="Paperback" selected>Paperback</option>
+                                        <option value="Hardcover">Hardcover</option>
+                                        <option value="eBook">eBook</option>
+                                        <option value="Audiobook">Audiobook</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="status">Reading Status</label>
+                                    <select id="status" style="width:100%; box-sizing: border-box;">
+                                        <option value="Unread">Unread</option>
+                                        <option value="Reading">Currently Reading</option>
+                                        <option value="Read">Read</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+                                <div style="width: 100%; display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="tags">Tags (comma-separated)</label>
+                                    <input type="text" id="tags" style="width:100%; box-sizing: border-box;" placeholder="e.g., fantasy, favorites, 2026">
+                                </div>
+                                <div style="width: 100%; display: flex; flex-direction: column; gap: 5px;">
+                                    <label for="series">Series (Optional)</label>
+                                    <input type="text" id="series" style="width:100%; box-sizing: border-box;" placeholder="e.g., The Expanse">
+                                </div>
+                            </div>
+                            <div style="width: 49%; display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px;">
+                                <label for="coverUrl">Cover URL</label>
+                                <input type="url" id="coverUrl" style="width:100%; box-sizing: border-box;" placeholder="https://...">
+                            </div>
+                            <div style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px;">
+                                <label for="desc">Description / Synopsis / Notes</label>
+                                <textarea id="desc" rows="3" maxlength="1000" style="font-family: Helvetica, sans-serif; width: 100%; box-sizing: border-box; resize: vertical; height: 150px;"></textarea>
+                            </div>
+                            <div class="flex-container" style="justify-content: space-between;">
+                                <div style="font-size: 12pt; color: var(--text-muted); padding-left: 10px;">* <span style="font-style: italic;">Required</span></div>
+                                <div>
+                                    <button type="button" class="cancel-btn" onclick="toggleSlide()">Cancel</button>
+                                    <button type="submit" class="submit-button">Save to Library</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="controls-bar">
+            <label for="searchInput" style="font-size: 12pt; color: var(--text-color); width: 95px;">Search/Filter: </label>
+			<input type="text" id="searchInput" style="min-width: 300px;" placeholder="Search by title or author...">
+            <select id="filterFormat" style="max-width: 120px;">
+                <option value="All">All Formats</option>
+                <option value="Paperback">Paperback</option>
+                <option value="Hardcover">Hardcover</option>
+                <option value="eBook">eBook</option>
+                <option value="Audiobook">Audiobook</option>
+            </select>
+            <select id="filterStatus" style="max-width: 150px;">
+                <option value="All">All Statuses</option>
+                <option value="Unread">Unread</option>
+                <option value="Reading">Currently Reading</option>
+                <option value="Read">Read</option>
+            </select>
+            <select id="sortOptions" style="max-width: 150px;">
+                <option value="newest">Sort: Newest</option>
+                <option value="oldest">Sort: Oldest</option>
+                <option value="titleAsc">Sort: Title (A-Z)</option>
+                <option value="titleDesc">Sort: Title (Z-A)</option>
+                <option value="authorAsc">Sort: Author (A-Z)</option>
+            </select>
+            <div style="display: flex; width: 100%; align-items: flex-start;">
+                <!-- Group By Column (Buttons on Top, Expand/Collapse Below) -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: center;">
+                        <span style="font-size: 12pt; color: var(--text-color); margin-right: 15px; width: 95px;">Group by: </span>
+                        <div style="display: flex; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
+                            <input type="hidden" id="groupBy" value="none">
+                            <button type="button" id="groupNone" onclick="toggleGroupBy('none')" style="border: none; border-radius: 0; padding: 8px 20px; font-size: 11pt; background-color: #238636; color: white;">None</button>
+                            <button type="button" id="groupTitle" onclick="toggleGroupBy('title')" style="border: none; border-radius: 0; padding: 8px 20px; font-size: 11pt; background-color: transparent; color: var(--text-muted);">Title (A-Z)</button>
+                            <button type="button" id="groupAuthor" onclick="toggleGroupBy('author')" style="border: none; border-radius: 0; padding: 8px 20px; font-size: 11pt; background-color: transparent; color: var(--text-muted);">Author (A-Z)</button>
+                            <button type="button" id="groupSeries" onclick="toggleGroupBy('series')" style="border: none; border-radius: 0; padding: 8px 20px; font-size: 11pt; background-color: transparent; color: var(--text-muted);">Series</button>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Collapse/Expand Controls Placed Below -->
+                    <div id="groupBulkControls" style="display: none; margin-left: 110px; gap: 8px;">
+                        <button type="button" onclick="toggleAllGroups(false)" class="page-btn" style="padding: 5px 12px; font-size: 9.5pt;" title="Expand all sections">Expand All</button>
+                        <button type="button" onclick="toggleAllGroups(true)" class="page-btn" style="padding: 5px 12px; font-size: 9.5pt;" title="Collapse all sections">Collapse All</button>
+                    </div>
+                </div>
+
+                <!-- Spacer -->
+                <div style="flex-grow: 1;"></div>
+
+                <!-- Rocker Button Group for View (Detailed / Simple) -->
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 12pt; color: var(--text-color); margin-right: 15px;">View: </span>
+                    <div style="display: flex; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden;">
+                        <input type="hidden" id="viewToggle" value="detailed">
+                        <button type="button" id="rockerDetailed" onclick="toggleView('detailed')" style="border: none; border-radius: 0; padding: 6px 20px; font-size: 11pt; background-color: #238636; color: white;">Detailed</button>
+                        <button type="button" id="rockerSimple" onclick="toggleView('simple')" style="border: none; border-radius: 0; padding: 6px 20px; font-size: 11pt; background-color: transparent; color: var(--text-muted);">Simple</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Bookshelf - Display Grid -->
+        <div style="overflow-x: auto;">
+            <table id="bookTable">
+                <thead>
+                    <tr>
+                        <th id="coverHeader" style="width: 60px; text-align: center;">Cover</th>
+                        <th>Title/Author</th>
+                        <th style="width: 60px;">Format</th>
+                        <th style="width: 60px; text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="bookList"></tbody>
+            </table>
+        </div>
+
+        <!-- Pagination UI -->
+        <div class="pagination-container" id="paginationContainer">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label for="booksPerPage" style="font-size: 13px; color: var(--text-muted);">Books per page:</label>
+                <select id="booksPerPage" style="padding: 4px 8px; font-size: 13px; width: 75px;">
+                    <option value="25" selected>25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="all">All</option>
+                </select>
+                <span class="pagination-info" id="paginationInfo">Showing 0-0 of 0</span>
+            </div>
+            <div class="pagination-actions" id="paginationButtons">
+                <!-- Dynamically generated page buttons -->
+            </div>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0px; padding-bottom: 2px;">
+                <h3 id="viewTitle" style="text-align: left; border-bottom: none; margin: 0px;"></h3>
+                <span id="viewSeries" style="font-size: 12pt; color: var(--accent-color); text-align: right;"></span>
+            </div>
+            <p id="viewAuthor" class="view-author"></p>
+            <div id="viewCoverContainer" style="margin: 20px 0;"></div>
+            <div style="display: flex; justify-content: left; align-items: center; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <span id="viewFormat" class="format-label"></span>
+                <span id="viewStatus" class="status-badge"></span>
+                <span title="Rating" id="viewRating" class="rating-div"></span>
+                <span id="viewIsbn" class="format-label" style="display: none;"></span>
+            </div>
+            <div id="viewTags" class="content-text" style="text-align: left; margin-bottom: 15px;"></div>
+            <div style="font-size: 14px; text-align: left; color: var(--text-color); padding-bottom: 15px;">
+                <div id="viewDesc" class="content-text" style="margin-left: 3px; padding-left: 8px; border-left: 1px solid var(--text-muted);"></div>
+                <div id="toggleDescButton" class="toggle-action-link" style="text-align: right; margin-top: 0px;">Show More</div>
+            </div>
+            <button class="cancel-btn" onclick="closeViewModal()" style="width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="text-align: left;">Edit Book Details</div>
+                    <div title="Close" onclick="closeModal()" style="font-size: 25pt; margin-top: -15px; cursor: pointer;">&times;</div>
+                </div>
+            </h3>
+            <form id="editForm">
+                <input type="hidden" id="editBookId">
+                <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="editTitle">Title</label>
+                        <input type="text" id="editTitle" required>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="editAuthor">Author</label>
+                        <input type="text" id="editAuthor" required>
+                    </div>
+                    <div style="display: grid; flex-direction: row; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="editFormat">Format</label>
+                            <select id="editFormat">
+                                <option value="Unknown">Unknown</option>
+                                <option value="Paperback">Paperback</option>
+                                <option value="Hardcover">Hardcover</option>
+                                <option value="eBook">eBook</option>
+                                <option value="Audiobook">Audiobook</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="editStatus">Status</label>
+                            <select id="editStatus">
+                                <option value="Unread">Unread</option>
+                                <option value="Reading">Currently Reading</option>
+                                <option value="Read">Read</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px;">
+                            <label for="editRating">Rating (0–5)</label>
+                            <select id="editRating">
+                                <option value="0" selected>Unrated</option>
+                                <option value="1">★</option>
+                                <option value="2">★★</option>
+                                <option value="3">★★★</option>
+                                <option value="4">★★★★</option>
+                                <option value="5">★★★★★</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: row; width: 100%; gap: 15px;">
+                        <div style="display: flex; flex-direction: column; gap: 5px; width: 100%;">
+                            <label for="editIsbn">ISBN (10 or 13 digits)</label>
+                            <input type="text" id="editIsbn" placeholder="e.g., 9780141439518 or 0451524934">
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 5px; width: 100%;">
+                            <label for="editSeries">Series (Optional)</label>
+                            <input type="text" id="editSeries" placeholder="e.g., The Expanse">
+                        </div>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="editTags">Tags (comma-separated)</label>
+                        <input type="text" id="editTags" placeholder="e.g., fantasy, favorites, 2026">
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="editDesc">Description / Synopsis / Notes</label>
+                        <textarea id="editDesc" rows="5" maxlength="1000" style="resize: vertical; font-family: Helvetica, sans-serif; width: 100%; box-sizing: border-box;"></textarea>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="editCoverUrl">Cover URL</label>
+                        <input type="url" id="editCoverUrl" placeholder="https://...">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="submit-button">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Warning Modal -->
+    <div class="modal-overlay" id="deleteWarningModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="border-bottom: none; margin-bottom: 10px; color: #f85149;">
+                Delete Book?
+            </h3>
+            <p style="font-size: 14px; color: var(--text-color); margin-bottom: 20px;">
+                This will permanently delete this book from your library. Continue?
+            </p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" style="width: 150px; background-color: #f85149; color: white; border-color: #f85149;">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Library Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="text-align: left;">Library Settings</div>
+                    <div title="Close" onclick="closeSettingsModal()" style="font-size: 25pt; margin-top: -12px; cursor: pointer;">&times;</div>
+                </div>
+            </h3>
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <!-- Export -->
+                <button onclick="exportLibrary()" class="settings-button" style="width: 100%; font-size: 12pt;">
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-bar-down" viewBox="0 0 16 16" style="margin-bottom: -3px;">
+                        <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5M8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6"/>
+                        </svg><div>Export Library to JSON</div>
+                    </div>
+                </button>
+                
+                <!-- Import -->
+                <div style="position: relative;">
+                    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importLibrary(event)">
+                    <button onclick="document.getElementById('importFile').click()" class="settings-button" style="width: 100%; font-size: 12pt;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-bar-up" viewBox="0 0 16 16" style="margin-bottom: -3px;">
+                                <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5m-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5"/>
+                            </svg><div>Import Library from JSON</div></div>
+                    </button>
+                </div>
+                
+                <hr style="width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 5px 0;">
+
+                <!-- Delete All -->
+                <button onclick="openDeleteAllModal()" class="settings-delete-button" style="font-size: 12pt;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-x" viewBox="0 0 16 16" style="margin-bottom: -3px;">
+                        <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293z" />
+                        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+                    </svg> Reset Library
+                </button>
+            </div>
+
+            <div class="modal-actions" style="justify-content: center; margin-top: 25px;">
+                <button type="button" class="cancel-btn" onclick="closeSettingsModal()" style="width: 100%;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Entire Library Warning Modal -->
+    <div class="modal-overlay" id="deleteAllWarningModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 style="border-bottom: none; margin-bottom: 10px; color: #f85149;">
+                Delete Entire Library?
+            </h3>
+            <p style="font-size: 14px; color: var(--text-color); margin-bottom: 20px;">
+                <strong>WARNING:</strong> This will permanently delete ALL books from your library. This action cannot be undone. Are you absolutely sure?
+            </p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" class="cancel-btn" onclick="closeDeleteAllModal()">Cancel</button>
+                <button type="button" id="confirmDeleteAllBtn" style="width: 150px; background-color: #f85149; color: white; border-color: #f85149;">Delete All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Alert Modal -->
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <h3 id="alertModalTitle" style="border-bottom: none; margin-bottom: 10px; color: var(--accent-color);">
+                Notice
+            </h3>
+            <p id="alertModalMessage" style="font-size: 14px; color: var(--text-color); margin-bottom: 20px;">
+                <!-- Message will be injected here -->
+            </p>
+            <div class="modal-actions" style="justify-content: center;">
+                <button type="button" class="width: 150px;submit-button" onclick="closeAlertModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Confirm Modal -->
+    <div class="modal-overlay" id="importConfirmModal">
+        <div class="modal-content" style="max-width: 450px; text-align: center;">
+            <h3 style="border-bottom: none; margin-bottom: 10px; color: #d29922;">
+                Import Library
+            </h3>
+            <p style="font-size: 14px; color: var(--text-color); margin-bottom: 20px;">
+                Your library already has books. Do you want to <strong>REPLACE</strong> your current library entirely, or <strong>MERGE</strong> the imported books with your existing list?
+            </p>
+            <div class="modal-actions" style="justify-content: center; gap: 10px;">
+                <button type="button" class="cancel-btn" onclick="closeImportConfirmModal()" style="width: 150px;">Cancel</button>
+                <button type="button" class="submit-button" onclick="executeImport('merge')" style="width: 150px; padding: 10px 15px;">Merge</button>
+                <button type="button" style="width: 150px; padding: 10px 15px; background-color: #f85149; color: white; border: 1px solid #f85149; border-radius: 6px; cursor: pointer;" onclick="executeImport('replace')">Overwrite</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="container">
+        <div class="tagline">
+            <footer>
+                <div>Crafted for book lovers — all data stays on this device.</div>
+                <div style="font-size: 0.85rem; margin-top: 6px;">Last Updated: <time id="formatted-date"></div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<script>
+    let myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || [];
+
+    const detailsElement = document.querySelector('details');
+
+    // Pagination State
+    let currentPage = 1;
+    let booksPerPage = 25;
+
+    // Form Elements
+    const bookForm = document.getElementById('bookForm');
+    const bookList = document.getElementById('bookList');
+    
+    // Modals
+    const editModal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
+    const viewModal = document.getElementById('viewModal');
+    
+    // API Elements
+    const isbnInput = document.getElementById('isbnInput');
+    const fetchIsbnBtn = document.getElementById('fetchIsbnBtn');
+    const apiStatusMessage = document.getElementById('apiStatusMessage');
+
+    // Control Bar Elements
+    const searchInput = document.getElementById('searchInput');
+    const filterFormat = document.getElementById('filterFormat');
+    const filterStatus = document.getElementById('filterStatus');
+    const sortOptions = document.getElementById('sortOptions');
+
+    // Pagination Elements
+    const booksPerPageSelect = document.getElementById('booksPerPage');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const paginationButtons = document.getElementById('paginationButtons');
+
+    // Book Constructor
+    function Book(title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series) {
+        this.title = title;
+        this.author = author;
+        this.format = format || 'Unknown';
+        this.status = status;
+        this.rating = rating;
+        this.ratingText = ratingText;
+        this.desc = desc || '';
+        this.coverUrl = coverUrl || '';
+        this.isbn10 = isbn10 || '';
+        this.isbn13 = isbn13 || '';
+        this.tags = tags || '';
+        this.series = series || '';
+        this.id = Date.now();
+    }
+
+    // --- API Logic ---
+    async function fetchBookByIsbn() {
+        const isbn = isbnInput.value.trim().replace(/[-\s]/g, ''); 
+        
+        if (!isbn || (isbn.length !== 10 && isbn.length !== 13)) {
+            showApiStatus('* * * Please enter a valid 10 or 13-digit ISBN * * *', '#faf33e');
+            return;
+        }
+
+        fetchIsbnBtn.disabled = true;
+        showApiStatus('Searching Open Library Database...', '#58a6ff');
+
+        try {
+            const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&jscmd=data&format=json`);
+            const data = await response.json();
+            const bookKey = `ISBN:${isbn}`;
+            
+            if (data && data[bookKey]) {
+                const bookData = data[bookKey];
+                
+                document.getElementById('title').value = bookData.title || 'Unknown Title';
+                
+                if (bookData.authors && bookData.authors.length > 0) {
+                    document.getElementById('author').value = bookData.authors.map(a => a.name).join(', ');
+                } else {
+                    document.getElementById('author').value = 'Unknown Author';
+                }
+
+                // Try to grab a medium-sized cover image if it exists
+                if (bookData.cover && bookData.cover.medium) {
+                    document.getElementById('coverUrl').value = bookData.cover.medium;
+                } else {
+                    document.getElementById('coverUrl').value = '';
+                }
+
+                // Strip all non-numeric characters to determine ISBN type
+                const numericIsbn = isbnInput.value.replace(/\D/g, '');
+                if (numericIsbn.length === 10) {
+                    document.getElementById('bookIsbn10').value = numericIsbn;
+                    document.getElementById('bookIsbn13').value = '';
+                } else if (numericIsbn.length === 13) {
+                    document.getElementById('bookIsbn13').value = numericIsbn;
+                    document.getElementById('bookIsbn10').value = '';
+                }
+
+                showApiStatus('Found! Review details below and click "Save to Library"', '#56d364');
+                isbnInput.value = ''; 
+            } else {
+                showApiStatus('No book found for this ISBN - try entering it manually in the form below', '#ffb722');
+            }
+        } catch (error) {
+            console.error(error);
+            showApiStatus('Network error occurred while fetching book details!', '#f85149');
+        } finally {
+            fetchIsbnBtn.disabled = false;
+        }
+    }
+
+    // --- Title & Author Web Search Logic ---
+    async function fetchBookByTitleAuthor() {
+        const titleStr = document.getElementById('searchTitleInput').value.trim();
+        const authorStr = document.getElementById('searchAuthorInput').value.trim();
+        
+        if (!titleStr && !authorStr) {
+            showApiStatus('* * * Please enter a Title or Author to search * * *', '#faf33e');
+            return;
+        }
+
+        const fetchTitleBtn = document.getElementById('fetchTitleBtn');
+        fetchTitleBtn.disabled = true;
+        showApiStatus('Searching Open Library Database...', '#58a6ff');
+
+        let query = '';
+        if (titleStr) query += `title=${encodeURIComponent(titleStr)}&`;
+        if (authorStr) query += `author=${encodeURIComponent(authorStr)}`;
+
+        try {
+            const response = await fetch(`https://openlibrary.org/search.json?${query}`);
+            const data = await response.json();
+            
+            if (data && data.docs && data.docs.length > 0) {
+                // Grab the best matching result (usually the first one returned)
+                const bookData = data.docs[0];
+                
+                document.getElementById('title').value = bookData.title || titleStr;
+                
+                if (bookData.author_name && bookData.author_name.length > 0) {
+                    document.getElementById('author').value = bookData.author_name.join(', ');
+                } else {
+                    document.getElementById('author').value = authorStr || 'Unknown Author';
+                }
+
+                // Try to grab a cover image using the search API's cover_i property
+                if (bookData.cover_i) {
+                    document.getElementById('coverUrl').value = `https://covers.openlibrary.org/b/id/${bookData.cover_i}-M.jpg`;
+                } else {
+                    document.getElementById('coverUrl').value = '';
+                }
+
+                // Parse ISBNs if they exist in the returned array
+                document.getElementById('bookIsbn10').value = '';
+                document.getElementById('bookIsbn13').value = '';
+                if (bookData.isbn && bookData.isbn.length > 0) {
+                    const isbn13 = bookData.isbn.find(i => i.length === 13);
+                    const isbn10 = bookData.isbn.find(i => i.length === 10);
+                    if (isbn13) document.getElementById('bookIsbn13').value = isbn13;
+                    if (isbn10) document.getElementById('bookIsbn10').value = isbn10;
+                }
+
+                showApiStatus('Found! Review details below and click "Save to Library"', '#56d364');
+                document.getElementById('searchTitleInput').value = ''; 
+                document.getElementById('searchAuthorInput').value = ''; 
+            } else {
+                showApiStatus('No book found for this query - try adjusting the search terms', '#d29922');
+            }
+        } catch (error) {
+            console.error(error);
+            showApiStatus('Network error occurred while fetching book details!', '#f85149');
+        } finally {
+            fetchTitleBtn.disabled = false;
+        }
+    }
+
+    function showApiStatus(text, color) {
+        apiStatusMessage.innerText = text;
+        apiStatusMessage.style.color = color;
+        // apiStatusMessage.style.display = 'flex';
+    }
+
+    // --- Rocker Toggle Logic ---
+    function toggleView(mode) {
+        // Update the hidden input that displayBooks() reads
+        document.getElementById('viewToggle').value = mode;
+        
+        const btnDetailed = document.getElementById('rockerDetailed');
+        const btnSimple = document.getElementById('rockerSimple');
+        
+        // Swap styles to show which side is active (using green theme)
+        if (mode === 'detailed') {
+            btnDetailed.style.backgroundColor = '#238636';
+            btnDetailed.style.color = 'white';
+            btnSimple.style.backgroundColor = 'transparent';
+            btnSimple.style.color = 'var(--text-muted)';
+        } else {
+            btnSimple.style.backgroundColor = '#238636';
+            btnSimple.style.color = 'white';
+            btnDetailed.style.backgroundColor = 'transparent';
+            btnDetailed.style.color = 'var(--text-muted)';
+        }
+        
+        // Refresh the table with the new layout
+        displayBooks();
+    }
+
+    // --- Group By Rocker Logic ---
+    function toggleGroupBy(mode) {
+        // Update the hidden input that displayBooks() reads
+        document.getElementById('groupBy').value = mode;
+        
+        const btnNone = document.getElementById('groupNone');
+        const btnTitle = document.getElementById('groupTitle');
+        const btnAuthor = document.getElementById('groupAuthor');
+        const btnSeries = document.getElementById('groupSeries');
+        
+        // Reset all buttons to inactive styles
+        const allBtns = [btnNone, btnTitle, btnAuthor, btnSeries];
+        allBtns.forEach(btn => {
+            btn.style.backgroundColor = 'transparent';
+            btn.style.color = 'var(--text-muted)';
+        });
+        
+        // Set the clicked button to active (green)
+        let activeBtn;
+        if (mode === 'none') activeBtn = btnNone;
+        else if (mode === 'title') activeBtn = btnTitle;
+        else if (mode === 'author') activeBtn = btnAuthor;
+        else if (mode === 'series') activeBtn = btnSeries;
+        
+        if (activeBtn) {
+            activeBtn.style.backgroundColor = '#238636';
+            activeBtn.style.color = 'white';
+        }
+        
+        currentPage = 1;
+        // Refresh the table layout
+        displayBooks();
+    }
+
+    // --- Group Collapse Logic ---
+    function toggleGroup(index, element) {
+        const rows = document.querySelectorAll(`.group-items-${index}`);
+        let isCollapsed = false;
+        
+        rows.forEach(row => {
+            row.classList.toggle('hidden-row');
+            if (row.classList.contains('hidden-row')) {
+                isCollapsed = true;
+            }
+        });
+        
+        // Rotate the chevron icon
+        const icon = element.querySelector('.collapse-icon');
+        if (icon) {
+            icon.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+        }
+    }
+    
+    // --- Pagination Control Function ---
+    function goToPage(page) {
+        currentPage = page;
+        displayBooks();
+    }
+
+    // --- Display & Filter Logic ---
+    function displayBooks() {
+        bookList.innerHTML = '';
+
+        // Read the view mode toggle and hide/show the Cover column header
+        const viewMode = document.getElementById('viewToggle') ? document.getElementById('viewToggle').value : 'detailed';
+        const coverHeader = document.getElementById('coverHeader');
+        if (coverHeader) {
+            coverHeader.style.display = viewMode === 'simple' ? 'none' : '';
+        }
+
+        // 1. Get current control values
+        const searchTerm = searchInput.value.toLowerCase();
+        const filterFormatValue = filterFormat.value;
+        const filterStatusValue = filterStatus.value;
+        const sortValue = sortOptions.value;
+
+        // 2. Filter the array
+        let filteredLibrary = myLibrary.filter(book => {
+            const matchesSearch = book.title.toLowerCase().includes(searchTerm) || 
+                                  book.author.toLowerCase().includes(searchTerm) || 
+                                  (book.tags && book.tags.toLowerCase().includes(searchTerm));
+            
+            let bookFormat = book.format;
+            const matchesFormatFilter = filterFormatValue === 'All' || bookFormat === filterFormatValue;
+            let bookStatus = book.status === 'Currently Reading' ? 'Reading' : book.status;
+            const matchesStatusFilter = filterStatusValue === 'All' || bookStatus === filterStatusValue;
+            return matchesSearch && matchesFormatFilter && matchesStatusFilter;
+        });
+
+        // 3. Sort the array
+        const groupByValue = document.getElementById('groupBy') ? document.getElementById('groupBy').value : 'none';
+        
+        // Helper function to remove leading "The ", "A ", or "An " and any leading punctuation/symbols
+        const stripArticle = (str) => {
+            if (!str) return '';
+            // Remove leading punctuation/quotes/brackets, then remove articles, then repeat to catch nested punctuation
+            return str
+                .replace(/^[^a-zA-Z0-9]+/, '')
+                .replace(/^(?:The)\s+/i, '')
+                .replace(/^[^a-zA-Z0-9]+/, '')
+                .trim();
+        };
+
+        // Helper function to parse "Series Name #1" into { name: "Series Name", num: 1 }
+        const parseSeries = (seriesString) => {
+            if (!seriesString || seriesString.trim() === '') return { name: 'Standalone', num: 999999 };
+            // Match string up to #, then capture the numbers after the #
+            const match = seriesString.match(/^(.*?)\s*#\s*(\d+(\.\d+)?)/);
+            if (match) return { name: match[1].trim(), num: parseFloat(match[2]) };
+            return { name: seriesString.trim(), num: 999999 };
+        };
+
+        filteredLibrary.sort((a, b) => {
+            // Override standard sort if a specific grouping is active
+            if (groupByValue === 'series') {
+                const seriesA = parseSeries(a.series);
+                const seriesB = parseSeries(b.series);
+                
+                // Compare base series names first, ignoring "The ", "A ", "An ", etc.
+                const cleanSeriesA = stripArticle(seriesA.name).toLowerCase();
+                const cleanSeriesB = stripArticle(seriesB.name).toLowerCase();
+
+                if (cleanSeriesA !== cleanSeriesB) {
+                    return cleanSeriesA.localeCompare(cleanSeriesB);
+                }
+                // If the series names match, sort by the extracted book number
+                return seriesA.num - seriesB.num;
+            } else if (groupByValue === 'title') {
+                // Force alphabetical title sort
+                return stripArticle(a.title).localeCompare(stripArticle(b.title));
+            } else if (groupByValue === 'author') {
+                // Force alphabetical author sort
+                const aLast = a.author.trim().split(' ').pop();
+                const bLast = b.author.trim().split(' ').pop();
+                if (aLast !== bLast) {
+                    return aLast.localeCompare(bLast);
+                }
+                // If it's the exact same author, sort their books by title
+                return stripArticle(a.title).localeCompare(stripArticle(b.title));
+            }
+
+            // Standard fallback sort (used when Group By is "None")
+            switch(sortValue) {
+                case 'newest': return b.id - a.id;
+                case 'oldest': return a.id - b.id;
+                case 'titleAsc': 
+                    return stripArticle(a.title).localeCompare(stripArticle(b.title));
+                case 'titleDesc': 
+                    return stripArticle(b.title).localeCompare(stripArticle(a.title));
+                case 'authorAsc': 
+                    let aLast = a.author.split(' ').pop();
+                    let bLast = b.author.split(' ').pop();
+                    return aLast.localeCompare(bLast);
+                default: return b.id - a.id;
+            }
+        });
+
+        // 4. Group the filtered and sorted array
+        let groupedLibrary = {};
+
+        const bulkControls = document.getElementById('groupBulkControls');
+
+        if (groupByValue === 'none') {
+            if (bulkControls) bulkControls.style.display = 'none';
+            // --- Normal Pagination Mode (No Grouping) ---
+            const totalItems = filteredLibrary.length;
+            const perPageVal = booksPerPageSelect.value;
+            const isAll = perPageVal === 'all';
+            const pageSize = isAll ? (totalItems || 1) : parseInt(perPageVal, 10);
+            const totalPages = Math.ceil(totalItems / pageSize) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = isAll ? 0 : (currentPage - 1) * pageSize;
+            const endIndex = isAll ? totalItems : Math.min(startIndex + pageSize, totalItems);
+
+            // Paginated slice for the current page
+            const pageItems = filteredLibrary.slice(startIndex, endIndex);
+
+            groupedLibrary['All Books'] = pageItems;
+
+            // Show pagination bar
+            document.getElementById('paginationContainer').style.display = 'flex';
+
+            if (totalItems === 0) {
+                paginationInfo.innerText = `Showing 0-0 of 0`;
+            } else {
+                paginationInfo.innerText = `Showing ${startIndex + 1}-${endIndex} of ${totalItems}`;
+            }
+
+            // Render pagination buttons (with decade grouping)
+            paginationButtons.innerHTML = '';
+            if (!isAll && totalPages > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.innerText = '‹ Prev';
+                prevBtn.className = 'page-btn';
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.onclick = () => goToPage(currentPage - 1);
+                paginationButtons.appendChild(prevBtn);
+
+                const currentBlockStart = Math.floor((currentPage - 1) / 10) * 10 + 1;
+                const currentBlockEnd = Math.min(currentBlockStart + 9, totalPages);
+
+                for (let start = 1; start < currentBlockStart; start += 10) {
+                    const end = Math.min(start + 9, totalPages);
+                    const jumpBtn = document.createElement('button');
+                    jumpBtn.innerText = `${start}-${end}`;
+                    jumpBtn.className = 'page-btn';
+                    jumpBtn.title = `Go to page ${start}`;
+                    jumpBtn.onclick = () => goToPage(start);
+                    paginationButtons.appendChild(jumpBtn);
+                }
+
+                for (let i = currentBlockStart; i <= currentBlockEnd; i++) {
+                    const pBtn = document.createElement('button');
+                    pBtn.innerText = i;
+                    pBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                    pBtn.onclick = () => goToPage(i);
+                    paginationButtons.appendChild(pBtn);
+                }
+
+                for (let start = currentBlockEnd + 1; start <= totalPages; start += 10) {
+                    const end = Math.min(start + 9, totalPages);
+                    const jumpBtn = document.createElement('button');
+                    jumpBtn.innerText = `${start}-${end}`;
+                    jumpBtn.className = 'page-btn';
+                    jumpBtn.title = `Go to page ${start}`;
+                    jumpBtn.onclick = () => goToPage(start);
+                    paginationButtons.appendChild(jumpBtn);
+                }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.innerText = 'Next ›';
+                nextBtn.className = 'page-btn';
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.onclick = () => goToPage(currentPage + 1);
+                paginationButtons.appendChild(nextBtn);
+            }
+        } else {
+            if (bulkControls) bulkControls.style.display = 'flex';
+            // --- Grouped Mode: Hide Pagination & Show All Records ---
+            document.getElementById('paginationContainer').style.display = 'none';
+
+            filteredLibrary.forEach(book => {
+                let groupKey = 'Unknown';
+                if (groupByValue === 'title') {
+                    const cleanTitle = stripArticle(book.title);
+                    groupKey = cleanTitle.charAt(0).toUpperCase();
+                    if (!/[A-Z]/.test(groupKey)) groupKey = '#';
+                } else if (groupByValue === 'author') {
+                    const rawAuthor = (book.author || '').trim();
+                    if (!rawAuthor) {
+                        groupKey = 'Unknown Author';
+                    } else if (rawAuthor.includes(',')) {
+                        groupKey = rawAuthor;
+                    } else {
+                        const parts = rawAuthor.split(/\s+/);
+                        if (parts.length > 1) {
+                            const last = parts.pop();
+                            groupKey = `${last}, ${parts.join(' ')}`;
+                        } else {
+                            groupKey = rawAuthor;
+                        }
+                    }
+                } else if (groupByValue === 'series') {
+                    const parsedName = parseSeries(book.series).name;
+
+                    // Move leading "The " to the end (e.g., "The Albany Cycle" -> "Albany Cycle, The")
+                    if (/^the\s+/i.test(parsedName)) {
+                        groupKey = `${parsedName.replace(/^the\s+/i, '').trim()}, The`;
+                    } else {
+                        groupKey = parsedName;
+                    }
+                }
+                
+                if (!groupedLibrary[groupKey]) {
+                    groupedLibrary[groupKey] = [];
+                }
+                groupedLibrary[groupKey].push(book);
+            });
+        }
+
+        // 5. Render the grouped arrays
+        if(filteredLibrary.length === 0) {
+            bookList.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding: 20px;">No books match your filters - try adjusting filters or add a new book to your shelf</td></tr>`;
+        }
+
+        let groupKeys = Object.keys(groupedLibrary);
+        
+        if (groupByValue !== 'none') {
+            groupKeys.sort((a, b) => {
+                if (a === 'Standalone') return 1;
+                if (b === 'Standalone') return -1;
+                if (a === '#') return -1;
+                if (b === '#') return 1;
+
+                return a.localeCompare(b);
+            });
+        }
+
+        groupKeys.forEach((key, index) => {
+            // Render the Group Header
+            if (groupByValue !== 'none' && groupedLibrary[key].length > 0) {
+                const groupRow = document.createElement('tr');
+                const count = groupedLibrary[key].length;
+                groupRow.innerHTML = `
+                    <td colspan="5" class="group-header" onclick="toggleGroup(${index}, this)" style="cursor: pointer; user-select: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span>${key} <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95em;">(${count})</span></span>
+                            <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="transition: transform 0.2s;">
+                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </div>
+                    </td>`;
+                bookList.appendChild(groupRow);
+            }
+
+            // Render book rows
+            groupedLibrary[key].forEach((book) => {
+                let statusClass = 'status-unread';
+                if (book.status === 'Currently Reading' || book.status === 'Reading') statusClass = 'status-reading';
+                if (book.status === 'Read') statusClass = 'status-read';
+
+                if (book.ratingText === 'Unrated') book.ratingText = '';
+
+                const displayFormat = book.format || 'Unknown';
+                
+                const coverHtml = book.coverUrl && book.coverUrl.trim() !== '' 
+                    ? `<img src="${book.coverUrl}" alt="Cover" class="cover-img" onclick="openViewModal(${book.id})">` 
+                    : `<div class="no-cover">No<br>Cover</div>`;
+
+                const descHtml = book.desc && book.desc.trim() !== '' 
+                    ? `<div title="Click to see more" style="overflow-y: hidden;" class="content-text" onclick="openViewModal(${book.id})">"${book.desc}"</div>`
+                    : `<div></div>`;
+                
+                const seriesHtml = book.series && book.series.trim() !== ''
+                    ? `<div style="font-size: 0.85rem; color: var(--accent-color); font-weight: bold; margin-bottom: 2px;">Series: ${book.series}</div>`
+                    : ``;
+
+                const buttonsHtml = `
+                    <div class="action-btns">
+                        <button title="View" class="view-btn" onclick="openViewModal(${book.id})">View</button>
+                        <button title="Edit" class="edit-btn" onclick="openModal(${book.id})">Edit</button>
+                        <button title="Delete" class="delete-btn" onclick="deleteBook(${book.id})">Delete</button>
+                    </div>
+                `;
+
+                const mainRow = document.createElement('tr');
+                mainRow.className = `main-row group-items-${index}`;
+                
+                const actionRow = document.createElement('tr');
+                actionRow.className = `action-row group-items-${index}`;
+
+                if (viewMode === 'simple') {
+                    const rawTitle = book.title || '';
+                    const displayTitle = rawTitle.length > 50 
+                        ? rawTitle.slice(0, 50).trimEnd() + '…' 
+                        : rawTitle;
+
+                    mainRow.innerHTML = `
+                        <td>
+                            <div style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px;">
+                                <strong style="color: var(--text-bright); font-size: 13pt;" title="${book.title}">${displayTitle}</strong>
+                                <span class="table-author" style="font-size: 0.95rem; margin-top: 0;">by ${book.author}</span>
+                            </div>
+                        </td>
+                        <td><span class="format-label">${displayFormat}</span></td>
+                        <td style="text-align: center;"><span class="status-badge ${statusClass}">${book.status}</span></td>
+                    `;
+                    actionRow.innerHTML = `<td colspan="3">${buttonsHtml}</td>`;
+                } else {
+                    mainRow.innerHTML = `
+                        <td>${coverHtml}</td>
+                        <td>
+                            ${seriesHtml}
+                            <div style="display: grid; grid-auto-flow: column;">
+                                <div><strong style="color: var(--text-bright); font-size: 14pt;">${book.title}</strong></div>
+                                <div class="rating-div" title="Rating">${book.ratingText}</div>
+                            </div>
+                            <div class="table-author">${book.author}</div>
+                            <div>${descHtml}</div>
+                        </td>
+                        <td><span class="format-label">${displayFormat}</span></td>
+                        <td style="text-align: center;"><span class="status-badge ${statusClass}">${book.status}</span></td>
+                    `;
+                    actionRow.innerHTML = `<td colspan="4">${buttonsHtml}</td>`;
+                }
+                
+                const highlightColor = '#1f242c';
+                const applyHover = () => {
+                    mainRow.style.backgroundColor = highlightColor;
+                    actionRow.style.backgroundColor = highlightColor;
+                    const btns = actionRow.querySelector('.action-btns');
+                    if(btns) btns.style.opacity = '1';
+                };
+                const removeHover = () => {
+                    mainRow.style.backgroundColor = '';
+                    actionRow.style.backgroundColor = '';
+                    const btns = actionRow.querySelector('.action-btns');
+                    if(btns) btns.style.opacity = '0';
+                };
+
+                mainRow.addEventListener('mouseenter', applyHover);
+                mainRow.addEventListener('mouseleave', removeHover);
+                actionRow.addEventListener('mouseenter', applyHover);
+                actionRow.addEventListener('mouseleave', removeHover);
+
+                bookList.appendChild(mainRow);
+                bookList.appendChild(actionRow);
+            });
+        });
+
+        // Always save the *master* list (not the filtered one) to localStorage
+        localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
+        
+        // Update library statistics
+        updateStats();
+    }
+
+    // --- Event Listeners for Controls ---
+    searchInput.addEventListener('input', () => { currentPage = 1; displayBooks(); });
+    filterFormat.addEventListener('change', () => { currentPage = 1; displayBooks(); });
+    filterStatus.addEventListener('change', () => { currentPage = 1; displayBooks(); });
+    sortOptions.addEventListener('change', () => { currentPage = 1; displayBooks(); });
+    booksPerPageSelect.addEventListener('change', () => { currentPage = 1; displayBooks(); });
+
+    // --- Duplicate Modal Logic ---
+    const duplicateWarningModal = document.getElementById('duplicateWarningModal');
+    const confirmDuplicateBtn = document.getElementById('confirmDuplicateBtn');
+    let pendingBookData = null; // Temporarily holds form data if a duplicate is found
+
+    function closeDuplicateModal() {
+        duplicateWarningModal.classList.remove('active');
+        pendingBookData = null;
+    }
+
+    duplicateWarningModal.addEventListener('click', (e) => {
+        if (e.target === duplicateWarningModal) closeDuplicateModal();
+    });
+
+    // Helper function to finalize the save
+    function saveNewBook(title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series) {
+        const newBook = new Book(title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series);
+        myLibrary.push(newBook);
+
+        // Reset control bar to defaults so the user sees their newly added book
+        searchInput.value = '';
+        filterFormat.value = 'All';
+        filterStatus.value = 'All';
+        sortOptions.value = 'newest';
+        currentPage = 1;
+
+        displayBooks();
+        bookForm.reset();
+        apiStatusMessage.textContent = '';  
+    }
+
+    // Handle user clicking "Submit" on the warning modal
+    confirmDuplicateBtn.addEventListener('click', () => {
+        if (pendingBookData) {
+            saveNewBook(
+                pendingBookData.title, 
+                pendingBookData.author, 
+                pendingBookData.format, 
+                pendingBookData.status, 
+                pendingBookData.rating, 
+                pendingBookData.ratingText, 
+                pendingBookData.desc, 
+                pendingBookData.coverUrl,
+                pendingBookData.isbn10,
+                pendingBookData.isbn13,
+                pendingBookData.tags,
+                pendingBookData.series
+            );
+            closeDuplicateModal();
+        }
+    });
+
+    // --- Updated Add Book Logic ---
+    bookForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const format = document.getElementById('format').value;
+        const status = document.getElementById('status').value;
+        const rating = '0';
+        const ratingText = 'Unrated';
+        const desc = document.getElementById('desc').value || '';
+        const coverUrl = document.getElementById('coverUrl').value;
+        const isbn10 = document.getElementById('bookIsbn10').value;
+        const isbn13 = document.getElementById('bookIsbn13').value;
+        const tags = document.getElementById('tags').value || '';
+        const series = document.getElementById('series').value || '';
+
+        // Check if the exact title, author, and format already exist (case-insensitive)
+        const isDuplicate = myLibrary.some(book => 
+            book.title.toLowerCase().trim() === title.toLowerCase().trim() &&
+            book.author.toLowerCase().trim() === author.toLowerCase().trim() &&
+            book.format === format
+        );
+
+        if (isDuplicate) {
+            // Hold the data and show the warning modal
+            pendingBookData = { title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series };
+            duplicateWarningModal.classList.add('active');
+        } else {
+            // No duplicate found, proceed with normal save
+            saveNewBook(title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series);
+        }
+        
+        // Clear hidden ISBN fields so manual entries don't accidentally inherit them
+        document.getElementById('bookIsbn10').value = '';
+        document.getElementById('bookIsbn13').value = '';
+    });
+
+    // --- Delete Book Warning Modal Logic ---
+    const deleteWarningModal = document.getElementById('deleteWarningModal');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    let pendingDeleteId = null; // Temporarily holds the ID of the book to be deleted
+
+    // Replaces the old native confirm() function
+    function deleteBook(id) {
+        pendingDeleteId = id;
+        deleteWarningModal.classList.add('active');
+    }
+
+    function closeDeleteModal() {
+        deleteWarningModal.classList.remove('active');
+        pendingDeleteId = null;
+    }
+
+    // Close modal if clicking outside the content box
+    deleteWarningModal.addEventListener('click', (e) => {
+        if (e.target === deleteWarningModal) closeDeleteModal();
+    });
+
+    // Execute the deletion when the user confirms
+    confirmDeleteBtn.addEventListener('click', () => {
+        if (pendingDeleteId !== null) {
+            myLibrary = myLibrary.filter(book => book.id !== pendingDeleteId);
+            displayBooks();
+            closeDeleteModal();
+        }
+    });
+
+    // --- View/Large Cover Logic ---
+    function openViewModal(id) {
+        const book = myLibrary.find(b => b.id === id);
+        if (!book) return;
+
+        document.getElementById('viewTitle').innerText = book.title;
+        document.getElementById('viewAuthor').innerText = `by ${book.author}`;
+        // --- NEW: Populate Series in Header ---
+        const viewSeries = document.getElementById('viewSeries');
+        if (book.series && book.series.trim() !== '') {
+            viewSeries.innerText = book.series;
+            viewSeries.style.display = 'block';
+        } else {
+            viewSeries.style.display = 'none';
+        }
+        document.getElementById('viewFormat').innerText = book.format || 'Unknown';
+        document.getElementById('viewRating').innerText = book.ratingText;
+        document.getElementById('viewDesc').innerText = book.desc;
+        
+        // --- NEW: Populate ISBN Badge ---
+        const viewIsbn = document.getElementById('viewIsbn');
+        if (book.isbn13 && book.isbn13.trim() !== '') {
+            viewIsbn.innerText = `ISBN13: ${book.isbn13}`;
+            viewIsbn.style.display = 'inline-block';
+        } else if (book.isbn10 && book.isbn10.trim() !== '') {
+            viewIsbn.innerText = `ISBN10: ${book.isbn10}`;
+            viewIsbn.style.display = 'inline-block';
+        } else {
+            viewIsbn.style.display = 'none'; // Hide if no ISBN is stored
+        }
+
+        // --- Render Tags ---
+        const tagsContainer = document.getElementById('viewTags');
+        tagsContainer.innerHTML = '';
+        if (book.tags && book.tags.trim() !== '') {
+            const tagsArray = book.tags.split(',').map(t => t.trim()).filter(t => t);
+            tagsArray.forEach(tag => {
+                const tagSpan = document.createElement('span');
+                tagSpan.innerText = `#${tag}`;
+                tagSpan.className = 'tag-pill';
+                
+                // Add click logic to trigger a search
+                tagSpan.onclick = () => {
+                    closeViewModal(); // Close the modal
+                    document.getElementById('searchInput').value = tag; // Inject tag into search bar
+                    currentPage = 1;
+                    displayBooks(); // Refresh the table
+                };
+                
+                tagsContainer.appendChild(tagSpan);
+            });
+            tagsContainer.style.display = '-webkit-box';
+        } else {
+            tagsContainer.style.display = 'none';
+        }
+        
+        // Handle the dynamic status badge class
+        const statusSpan = document.getElementById('viewStatus');
+        statusSpan.innerText = book.status;
+        statusSpan.className = 'status-badge'; 
+        if (book.status === 'Currently Reading' || book.status === 'Reading') statusSpan.classList.add('status-reading');
+        else if (book.status === 'Read') statusSpan.classList.add('status-read');
+        else statusSpan.classList.add('status-unread');
+
+        // Handle Cover Rendering
+        const coverContainer = document.getElementById('viewCoverContainer');
+        if (book.coverUrl && book.coverUrl.trim() !== '') {
+            let largeCoverUrl = book.coverUrl;
+            
+            // Trick to get a higher resolution image automatically if fetched via OpenLibrary API
+            if (largeCoverUrl.includes('covers.openlibrary.org') && largeCoverUrl.endsWith('-M.jpg')) {
+                largeCoverUrl = largeCoverUrl.replace('-M.jpg', '-L.jpg');
+            }
+            
+            coverContainer.innerHTML = `<img src="${largeCoverUrl}" alt="Large Cover" class="large-cover-img">`;
+        } else {
+            coverContainer.innerHTML = `<div class="large-no-cover">No Cover<br>Available</div>`;
+        }
+
+        const viewDesc = document.getElementById('viewDesc');
+        const descLength = viewDesc.innerText.length;
+        const toggleDescButton = document.getElementById('toggleDescButton');
+
+        // NEW: Force the description to collapse and reset the button text by default
+        viewDesc.classList.remove('expanded');
+        toggleDescButton.textContent = 'Show More';
+
+        if (descLength === 0) {
+            toggleDescButton.classList.add('hidden');
+        }
+
+        viewModal.classList.add('active');
+    }
+
+    function closeViewModal() {
+        viewModal.classList.remove('active');
+        toggleDescButton.classList.remove('hidden');
+    }
+
+    viewModal.addEventListener('click', (e) => {
+        if (e.target === viewModal) closeViewModal();
+    });
+
+    // --- Modal Editing Logic ---
+    function openModal(id) {
+        const bookToEdit = myLibrary.find(book => book.id === id);
+        if (!bookToEdit) return;
+
+        document.getElementById('editBookId').value = bookToEdit.id;
+        document.getElementById('editTitle').value = bookToEdit.title;
+        document.getElementById('editAuthor').value = bookToEdit.author;
+        document.getElementById('editCoverUrl').value = bookToEdit.coverUrl || '';
+        document.getElementById('editFormat').value = bookToEdit.format || 'Unknown'; 
+        document.getElementById('editStatus').value = bookToEdit.status === 'Currently Reading' ? 'Reading' : bookToEdit.status;
+        document.getElementById('editRating').value = bookToEdit.rating; 
+        document.getElementById('editDesc').value = bookToEdit.desc || '';
+        document.getElementById('editTags').value = bookToEdit.tags || '';
+        // Load the ISBN (Prefers 13, falls back to 10)
+        document.getElementById('editIsbn').value = bookToEdit.isbn13 || bookToEdit.isbn10 || '';
+        document.getElementById('editSeries').value = bookToEdit.series || '';
+
+        editModal.classList.add('active');
+    }
+
+    function closeModal() {
+        editModal.classList.remove('active');
+        editForm.reset();
+    }
+
+    editForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = parseInt(document.getElementById('editBookId').value);
+        const title = document.getElementById('editTitle').value;
+        const author = document.getElementById('editAuthor').value;
+        const coverUrl = document.getElementById('editCoverUrl').value;
+        const format = document.getElementById('editFormat').value;
+        const status = document.getElementById('editStatus').value;
+        const rating = document.getElementById('editRating').value || '0';
+        const ratingText = document.getElementById('editRating').options[rating].textContent || 'Unrated';
+        const desc = document.getElementById('editDesc').value || '';
+        const tags = document.getElementById('editTags').value || '';
+        const series = document.getElementById('editSeries').value || '';
+
+        // Strip non-numeric characters and determine ISBN type
+        const rawIsbn = document.getElementById('editIsbn').value;
+        const numericIsbn = rawIsbn.replace(/\D/g, '');
+        let isbn10 = '';
+        let isbn13 = '';
+        
+        if (numericIsbn.length === 10) {
+            isbn10 = numericIsbn;
+        } else if (numericIsbn.length === 13) {
+            isbn13 = numericIsbn;
+        }
+
+        // Add isbn10, isbn13, tags and series to the returned object
+        myLibrary = myLibrary.map(book => {
+            if (book.id === id) {
+                return { ...book, title, author, format, status, rating, ratingText, desc, coverUrl, isbn10, isbn13, tags, series };
+            }
+            return book;
+        });
+
+        displayBooks();
+        closeModal();
+    });
+
+    editModal.addEventListener('click', (e) => {
+        if (e.target === editModal) closeModal();
+    });
+
+    function toggleSlide() {
+        const targetDiv = document.getElementById("collapsibleDiv");
+
+        if (targetDiv.style.maxHeight && targetDiv.style.maxHeight !== "0px") {
+            // If already open, collapse it
+            targetDiv.style.maxHeight = "0px";
+            bookForm.reset();
+            apiStatusMessage.textContent = ''; 
+        } else {
+            // If closed, set max-height to the exact content height
+            targetDiv.style.maxHeight = targetDiv.scrollHeight + "px";
+        }        
+    };
+
+    // Toggle Description text inside viewModal
+    const viewDesc = document.getElementById('viewDesc');
+    const toggleDescButton = document.getElementById('toggleDescButton');
+
+    toggleDescButton.addEventListener('click', () => {
+        // Toggle the expanded class on the text container
+        viewDesc.classList.toggle('expanded');
+        
+        // Dynamically shift button label depending on state
+        if (viewDesc.classList.contains('expanded')) {
+            toggleDescButton.textContent = 'Show Less';
+        } else {
+            toggleDescButton.textContent = 'Show More';
+        }
+    });
+
+    // --- Statistics Logic ---
+    function updateStats() {
+        const totalBooks = myLibrary.length;
+        let readCount = 0;
+        let readingCount = 0;
+        let unreadCount = 0;
+        let totalRating = 0;
+        let ratedReadBooksCount = 0;
+
+        myLibrary.forEach(book => {
+            // Standardize the status string mapping
+            const status = book.status === 'Currently Reading' ? 'Reading' : book.status;
+            
+            if (status === 'Read') {
+                readCount++;
+                const rating = parseInt(book.rating) || 0;
+                if (rating > 0) {
+                    totalRating += rating;
+                    ratedReadBooksCount++;
+                }
+            } else if (status === 'Reading') {
+                readingCount++;
+            } else {
+                unreadCount++; // Defaults unread logic for everything else
+            }
+        });
+
+        // Calculate Average Rating, rounding to 1 decimal place
+        const avgRating = ratedReadBooksCount > 0 ? (totalRating / ratedReadBooksCount).toFixed(1) : '0.0';
+
+        // Update the DOM
+        document.getElementById('statTotal').innerText = totalBooks;
+        document.getElementById('statRead').innerText = readCount;
+        document.getElementById('statReading').innerText = readingCount;
+        document.getElementById('statUnread').innerText = unreadCount;
+        document.getElementById('statAvgRating').innerText = avgRating + (avgRating !== '0.0' ? ' ★' : '');
+    }
+
+    // --- Custom Alert Modal Logic ---
+    const alertModal = document.getElementById('alertModal');
+    const alertModalTitle = document.getElementById('alertModalTitle');
+    const alertModalMessage = document.getElementById('alertModalMessage');
+
+    function customAlert(title, message, color = 'var(--accent-color)') {
+        alertModalTitle.innerText = title;
+        alertModalTitle.style.color = color;
+        alertModalMessage.innerText = message;
+        alertModal.classList.add('active');
+    }
+
+    function closeAlertModal() {
+        alertModal.classList.remove('active');
+    }
+
+    alertModal.addEventListener('click', (e) => {
+        if (e.target === alertModal) closeAlertModal();
+    });
+
+    // --- Import Confirmation Modal Logic ---
+    const importConfirmModal = document.getElementById('importConfirmModal');
+    let pendingImportData = null;
+
+    function openImportConfirmModal(data) {
+        pendingImportData = data;
+        importConfirmModal.classList.add('active');
+    }
+
+    function closeImportConfirmModal() {
+        importConfirmModal.classList.remove('active');
+        pendingImportData = null;
+    }
+
+    importConfirmModal.addEventListener('click', (e) => {
+        if (e.target === importConfirmModal) closeImportConfirmModal();
+    });
+
+    function executeImport(action) {
+        if (pendingImportData) {
+            if (action === 'replace') {
+                myLibrary = pendingImportData;
+            } else if (action === 'merge') {
+                myLibrary = myLibrary.concat(pendingImportData);
+            }
+            currentPage = 1;
+            displayBooks();
+            closeImportConfirmModal();
+            closeSettingsModal();
+            customAlert("Success", "Library imported successfully!", "#56d364");
+        }
+    }
+
+    // --- Library Settings & JSON Logic ---
+    const settingsModal = document.getElementById('settingsModal');
+
+    function openSettingsModal() {
+        settingsModal.classList.add('active');
+    }
+
+    function closeSettingsModal() {
+        settingsModal.classList.remove('active');
+    }
+
+    settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) closeSettingsModal();
+    });
+
+    // Export Logic
+    function exportLibrary() {
+        if (myLibrary.length === 0) {
+            customAlert("Export Failed", "Your library is empty. There is nothing to export.", "#f85149");
+            return;
+        }
+        
+        // Convert the array to a formatted JSON string
+        const dataStr = JSON.stringify(myLibrary, null, 2);
+        
+        // Create a blob and temporary link to trigger the download
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        
+        // Format: YYYY-MM-DD_HH-MM-SS
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+
+        a.href = url;
+        a.download = `shelfwise_export.${timestamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Import Logic
+    function importLibrary(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                
+                if (Array.isArray(importedData)) {
+                    // Check if current library has items to ask about merging vs overwriting
+                    if (myLibrary.length > 0) {
+                        openImportConfirmModal(importedData);
+                    } else {
+                        myLibrary = importedData;
+                        currentPage = 1;
+                        displayBooks();
+                        closeSettingsModal();
+                        customAlert("Success", "Library imported successfully!", "#56d364");
+                    }
+                } else {
+                    customAlert("Import Failed", "Invalid JSON format. Expected an array of books.", "#f85149");
+                }
+            } catch (error) {
+                customAlert("Import Error", "Error parsing JSON file. Make sure it is a valid ShelfWise export.", "#f85149");
+            }
+        };
+        reader.readAsText(file);
+        
+        // Reset the input so the same file can be selected again if needed
+        event.target.value = '';
+    }
+
+    // --- Delete Entire Library Modal Logic ---
+    const deleteAllWarningModal = document.getElementById('deleteAllWarningModal');
+    const confirmDeleteAllBtn = document.getElementById('confirmDeleteAllBtn');
+
+    function openDeleteAllModal() {
+        if (myLibrary.length === 0) {
+            customAlert("Notice", "Your library is already empty.", "#d29922");
+            return;
+        }
+        deleteAllWarningModal.classList.add('active');
+    }
+
+    function closeDeleteAllModal() {
+        deleteAllWarningModal.classList.remove('active');
+    }
+
+    // Close modal if clicking outside the content box
+    deleteAllWarningModal.addEventListener('click', (e) => {
+        if (e.target === deleteAllWarningModal) closeDeleteAllModal();
+    });
+
+    // Execute the full wipe when the user confirms
+    confirmDeleteAllBtn.addEventListener('click', () => {
+        myLibrary = [];
+        currentPage = 1;
+        displayBooks();
+        closeDeleteAllModal();
+        closeSettingsModal(); // Optionally close the settings menu behind it
+    });
+
+    // --- Bulk Group Expand/Collapse Logic ---
+    function toggleAllGroups(collapse) {
+        // Toggle book item rows
+        const allGroupRows = document.querySelectorAll('tr[class*="group-items-"]');
+        allGroupRows.forEach(row => {
+            if (collapse) {
+                row.classList.add('hidden-row');
+            } else {
+                row.classList.remove('hidden-row');
+            }
+        });
+
+        // Rotate header chevron icons
+        const allChevrons = document.querySelectorAll('.collapse-icon');
+        allChevrons.forEach(icon => {
+            icon.style.transform = collapse ? 'rotate(-90deg)' : 'rotate(0deg)';
+        });
+    }
+
+    // Initial load
+    displayBooks();
+
+    // Formatted Last Modificed Date e.g., "Jul 6, 2026"
+    const lastMod = new Date(document.lastModified);
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const cleanDate = lastMod.toLocaleDateString('en-US', options);
+    
+    document.getElementById("formatted-date").textContent = cleanDate;
+
+</script>
+
+</body>
+</html>
