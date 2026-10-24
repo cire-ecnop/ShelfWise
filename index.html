@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>ShelfWise - Personal Book Tracker</title>
     
-	<link href="https://googleapis.com" rel="stylesheet">
-    <link rel="icon" href="http://googleusercontent.com/image_generation_content/0">
-	<link rel="canonical" href="https://icons.getbootstrap.com/icons/eye-fill/">
+<meta name="theme-color" content="#0d1117">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="ShelfWise">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230d1117'/%3E%3Cpath fill='%23c6c07f' d='M3 2h2v12H3zm3 2h2v10H6zm3 1.5 1.9-.5 2.6 9.4-1.9.5z'/%3E%3C/svg%3E">
 
     <style>
         :root {
@@ -676,6 +679,63 @@
 			padding: 10px;
 		}
 
+        /* ===== Mobile / touch support ===== */
+        html { -webkit-text-size-adjust: 100%; }
+        body { padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+        @media (hover: none) {
+            .action-btns { opacity: 1 !important; }   /* no hover on touch screens */
+        }
+        @media (max-width: 700px) {
+            body { padding: 10px 6px; }
+            .container { width: 100%; }
+            h1 { font-size: 2.3rem; }
+            h1 svg { width: 28px; height: 28px; }
+            .tagline { font-size: 11pt !important; margin: 0 8px !important; }
+            .card { padding: 12px; }
+
+            /* stats */
+            .line-segment { display: none; }
+            .stats-card { width: 100% !important; box-sizing: border-box; flex-wrap: wrap !important; padding: 10px !important; }
+            .stats-element { flex: 1 1 28% !important; min-width: 70px !important; max-width: none !important; }
+            .stats-num { font-size: 20px; }
+            .stats-label { font-size: 13px; }
+
+            /* add-book form */
+            .form-group { grid-template-columns: 1fr !important; gap: 10px; }
+            #collapsibleDiv .card > div:first-child { flex-direction: column !important; }
+            #collapsibleDiv .card > div:first-child > div { width: 100% !important; border-left: 0 !important; padding-left: 0 !important; }
+            .isbn-group { flex-wrap: wrap; }
+            .submit-button { width: 100% !important; }
+
+            /* iOS zooms into inputs under 16px */
+            input, select, textarea { font-size: 16px !important; }
+
+            /* search / filter / group / view bar */
+            .controls-bar label { display: none; }
+            .controls-bar #searchInput { min-width: 0 !important; flex: 1 1 100% !important; }
+            .controls-bar select { max-width: none !important; flex: 1 1 30% !important; min-width: 0 !important; }
+            .controls-bar > div { flex-wrap: wrap !important; gap: 10px; }
+            .controls-bar span { width: auto !important; margin-right: 8px !important; }
+            .controls-bar button[id^="group"] { padding: 8px 9px !important; font-size: 10pt !important; }
+            #rockerDetailed, #rockerSimple { padding: 6px 12px !important; }
+            #groupBulkControls { margin-left: 0 !important; }
+
+            /* table */
+            th, td { padding: 8px 5px; }
+            th { font-size: 10pt; }
+            td strong { font-size: 12pt !important; }
+            .cover-img { width: 52px; }
+            .action-btns { gap: 6px; }
+            .view-btn, .edit-btn, .delete-btn { width: auto !important; flex: 1; padding: 8px 6px; font-size: 10pt; }
+
+            /* modals */
+            .modal-content { padding: 16px !important; max-height: 92vh; overflow-y: auto; box-sizing: border-box; }
+            .modal-actions { flex-wrap: wrap; }
+            .modal-actions button { width: auto !important; flex: 1 1 40%; }
+            .pagination-container { justify-content: center; }
+            .page-btn { min-height: 36px; }
+        }
+
     </style>
 </head>
 <body>
@@ -1160,6 +1220,25 @@
                 
                 <hr style="width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 5px 0;">
 
+                <!-- Cloud Sync -->
+                <div id="syncSection" style="text-align: left;">
+                    <div style="font-weight: 600; color: var(--text-bright); margin-bottom: 6px;">Cloud Sync</div>
+                    <div id="syncStatus" style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Not connected - data is only on this device.</div>
+                    <div id="syncConnect">
+                        <input type="password" id="syncTokenInput" autocomplete="off" placeholder="Paste GitHub token (gist scope)" style="width: 100%; box-sizing: border-box; margin-bottom: 8px;">
+                        <button onclick="connectSync()" class="settings-button" style="width: 100%; font-size: 12pt;">Connect</button>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.4;">
+                            Create a token at github.com/settings/tokens/new with <strong>only</strong> the "gist" box ticked. Your library is saved as a private gist in your own GitHub account.
+                        </div>
+                    </div>
+                    <div id="syncConnected" style="display: none; gap: 10px;">
+                        <button onclick="syncNow(true)" class="settings-button" style="flex: 1; font-size: 11pt;">Sync Now</button>
+                        <button onclick="disconnectSync()" class="settings-button" style="flex: 1; font-size: 11pt;">Disconnect</button>
+                    </div>
+                </div>
+
+                <hr style="width: 100%; border: 0; border-top: 1px solid var(--border-color); margin: 5px 0;">
+
                 <!-- Delete All -->
                 <button onclick="openDeleteAllModal()" class="settings-delete-button" style="font-size: 12pt;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-file-earmark-x" viewBox="0 0 16 16" style="margin-bottom: -3px;">
@@ -1227,7 +1306,7 @@
     <div class="container">
         <div class="tagline">
             <footer>
-                <div>Crafted for book lovers — all data stays on this device.</div>
+                <div id="footerNote">Crafted for book lovers — all data stays on this device.</div>
                 <div style="font-size: 0.85rem; margin-top: 6px;">Last Updated: <time id="formatted-date"></div>
             </footer>
         </div>
@@ -1235,7 +1314,8 @@
 </div>
 
 <script>
-    let myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || [];
+    let myLibrary = [];
+    try { myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || []; } catch (e) { myLibrary = []; }
 
     const detailsElement = document.querySelector('details');
 
@@ -1852,8 +1932,8 @@
             });
         });
 
-        // Always save the *master* list (not the filtered one) to localStorage
-        localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
+        // Always save the *master* list (not the filtered one); also flags cloud sync when something changed
+        persistLibrary();
         
         // Update library statistics
         updateStats();
@@ -2404,8 +2484,186 @@
         });
     }
 
+
+    // ======================================================================
+    // Cloud sync: stores the library in a private GitHub Gist (file: shelfwise.json)
+    // ======================================================================
+    const SYNC = {
+        token: 'shelfwise_gh_token',
+        gist: 'shelfwise_gist_id',
+        seen: 'shelfwise_remote_rev',     // revision number of the cloud copy this device last saw
+        dirty: 'shelfwise_dirty',         // '1' = local changes not yet uploaded
+        file: 'shelfwise.json'
+    };
+    let syncTimer = null, syncBusy = false;
+
+    const syncToken = () => localStorage.getItem(SYNC.token) || '';
+
+    function persistLibrary() {
+        const json = JSON.stringify(myLibrary);
+        if (json !== (localStorage.getItem('myLibrary') ?? '[]')) {
+            localStorage.setItem('myLibrary', json);
+            if (syncToken()) {
+                localStorage.setItem(SYNC.dirty, '1');
+                scheduleSync(2500);
+            }
+        }
+    }
+
+    function scheduleSync(ms) {
+        clearTimeout(syncTimer);
+        syncTimer = setTimeout(() => syncNow(false), ms);
+    }
+
+    function setSyncStatus(text, color) {
+        const el = document.getElementById('syncStatus');
+        if (el) { el.textContent = text; el.style.color = color || 'var(--text-muted)'; }
+        const connected = !!syncToken();
+        document.getElementById('syncConnect').style.display = connected ? 'none' : 'block';
+        document.getElementById('syncConnected').style.display = connected ? 'flex' : 'none';
+        document.getElementById('footerNote').textContent = connected
+            ? 'Crafted for book lovers — synced to your private GitHub Gist.'
+            : 'Crafted for book lovers — all data stays on this device.';
+    }
+
+    async function gh(path, opts = {}) {
+        const res = await fetch('https://api.github.com' + path, {
+            ...opts,
+            headers: {
+                'Authorization': 'Bearer ' + syncToken(),
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            }
+        });
+        if (!res.ok) { const err = new Error('GitHub ' + res.status); err.status = res.status; throw err; }
+        return res.json();
+    }
+
+    const cloudPayload = (rev) => JSON.stringify({ app: 'ShelfWise', rev, updatedAt: new Date().toISOString(), books: myLibrary }, null, 1);
+
+    async function readGist(id) {
+        const g = await gh('/gists/' + id);
+        const f = g.files && g.files[SYNC.file];
+        if (!f) return null;
+        const text = f.truncated ? await (await fetch(f.raw_url)).text() : f.content;
+        return JSON.parse(text);
+    }
+
+    async function findGistId() {
+        const list = await gh('/gists?per_page=100');
+        const hit = list.find(g => g.files && g.files[SYNC.file]);
+        return hit ? hit.id : null;
+    }
+
+    async function pushToCloud(id, baseRev) {
+        const snapshot = localStorage.getItem('myLibrary');
+        const rev = (baseRev || 0) + 1;
+        const content = cloudPayload(rev);
+        await gh('/gists/' + id, { method: 'PATCH', body: JSON.stringify({ files: { [SYNC.file]: { content } } }) });
+        localStorage.setItem(SYNC.seen, String(rev));
+        if (localStorage.getItem('myLibrary') === snapshot) localStorage.removeItem(SYNC.dirty);
+        else scheduleSync(1000);   // edited while uploading
+    }
+
+    function adoptBooks(books) {
+        myLibrary = books;
+        localStorage.setItem('myLibrary', JSON.stringify(myLibrary));  // set first so persistLibrary sees no change
+        displayBooks();
+    }
+
+    async function syncNow(manual) {
+        if (!syncToken() || syncBusy) return;
+        if (!navigator.onLine) { setSyncStatus('Offline - changes will sync when you are back online.'); return; }
+        syncBusy = true;
+        setSyncStatus('Syncing...', 'var(--accent-color)');
+        try {
+            let id = localStorage.getItem(SYNC.gist);
+            if (!id) {
+                id = await findGistId();
+                if (!id) {   // first ever sync: create the private gist
+                    const content = cloudPayload(1);
+                    const g = await gh('/gists', { method: 'POST', body: JSON.stringify({
+                        description: 'ShelfWise library data', public: false,
+                        files: { [SYNC.file]: { content } } }) });
+                    localStorage.setItem(SYNC.gist, g.id);
+                    localStorage.setItem(SYNC.seen, '1');
+                    localStorage.removeItem(SYNC.dirty);
+                    setSyncStatus('Connected. Library uploaded to a new private gist.', '#56d364');
+                    return;
+                }
+                localStorage.setItem(SYNC.gist, id);
+            }
+
+            const remote = await readGist(id);
+            const dirty = localStorage.getItem(SYNC.dirty) === '1';
+            const seen = Number(localStorage.getItem(SYNC.seen)) || 0;
+            const remoteRev = remote && remote.rev ? remote.rev : 0;
+            const remoteBooks = remote && Array.isArray(remote.books) ? remote.books : null;
+            const remoteChanged = remoteBooks && remoteRev !== seen;
+            let msg = 'Up to date.';
+
+            if (remoteChanged && !dirty) {
+                adoptBooks(remoteBooks);
+                localStorage.setItem(SYNC.seen, String(remoteRev));
+                msg = 'Downloaded latest library from the cloud.';
+            } else if (remoteChanged && dirty) {
+                // Both sides changed: keep every book from both (cloud wins if the same book differs)
+                const byId = new Map(myLibrary.map(b => [b.id, b]));
+                remoteBooks.forEach(b => byId.set(b.id, b));
+                adoptBooks([...byId.values()]);
+                await pushToCloud(id, remoteRev);
+                msg = 'Merged this device with the cloud copy.';
+            } else if (dirty || !remoteBooks) {
+                await pushToCloud(id, remoteRev);
+                msg = 'Changes uploaded.';
+            }
+            setSyncStatus(msg + ' ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }), '#56d364');
+        } catch (err) {
+            if (err.status === 401) {
+                setSyncStatus('GitHub rejected the token. Disconnect and reconnect with a new one.', '#f85149');
+            } else if (err.status === 404 && localStorage.getItem(SYNC.gist)) {
+                localStorage.removeItem(SYNC.gist);   // gist deleted: look up / recreate next time
+                setSyncStatus('Cloud file not found. Tap Sync Now to recreate it.', '#d29922');
+            } else {
+                setSyncStatus('Sync failed (' + (err.message || 'network') + '). Will retry.', '#f85149');
+            }
+        } finally {
+            syncBusy = false;
+        }
+    }
+
+    async function connectSync() {
+        const input = document.getElementById('syncTokenInput');
+        const token = input.value.trim();
+        if (!token) { setSyncStatus('Paste your GitHub token first.', '#faf33e'); return; }
+        localStorage.setItem(SYNC.token, token);
+        localStorage.removeItem(SYNC.gist);
+        localStorage.removeItem(SYNC.seen);
+        // If this device already has books, treat them as changes so they are merged, never overwritten
+        if (myLibrary.length) localStorage.setItem(SYNC.dirty, '1'); else localStorage.removeItem(SYNC.dirty);
+        input.value = '';
+        await syncNow(true);
+        if (/rejected/.test(document.getElementById('syncStatus').textContent)) localStorage.removeItem(SYNC.token);
+        setSyncStatus(document.getElementById('syncStatus').textContent, document.getElementById('syncStatus').style.color);
+    }
+
+    function disconnectSync() {
+        [SYNC.token, SYNC.gist, SYNC.seen, SYNC.dirty].forEach(k => localStorage.removeItem(k));
+        setSyncStatus('Disconnected. Your books stay on this device; the cloud copy is untouched.');
+    }
+
+    // Sync when the app opens, when you come back to it, and when the connection returns
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') syncNow(false);
+        else if (localStorage.getItem(SYNC.dirty) === '1') syncNow(false);
+    });
+    window.addEventListener('online', () => syncNow(false));
+
+
     // Initial load
     displayBooks();
+    setSyncStatus(syncToken() ? 'Connected.' : 'Not connected - data is only on this device.');
+    syncNow(false);
 
     // Formatted Last Modificed Date e.g., "Jul 6, 2026"
     const lastMod = new Date(document.lastModified);
