@@ -403,6 +403,8 @@
         .status-unread { background: #f851491a; color: var(--unread-color); border-color: rgba(248, 81, 73, 0.2); }
         .status-reading { background: rgba(210, 153, 34, 0.1); color: var(--reading-color); border-color: rgba(210, 153, 34, 0.2); }
         .status-read { background: rgba(56, 253, 133, 0.1); color: var(--read-color); border-color: rgba(56, 253, 108, 0.2); }
+		.status-incomplete { background: rgba(163, 113, 247, 0.12); color: #a371f7; border-color: rgba(163, 113, 247, 0.25); }
+		.status-archived { background: rgba(139, 148, 158, 0.12); color: var(--text-muted); border-color: rgba(139, 148, 158, 0.25); }
 
         .format-label {
             font-size: 10.5pt;
@@ -1035,10 +1037,12 @@
                                 <div style="display: flex; flex-direction: column; gap: 5px;">
                                     <label for="status">Reading Status</label>
                                     <select id="status" style="width:100%; box-sizing: border-box;">
-                                        <option value="Unread">Unread</option>
-                                        <option value="Reading">Currently Reading</option>
-                                        <option value="Read">Read</option>
-                                    </select>
+									<option value="Unread">Unread</option>
+									<option value="Reading">Currently Reading</option>
+									<option value="Read">Read</option>
+									<option value="Incomplete">Incomplete</option>
+									<option value="Archived">Archived</option>
+								</select>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 15px; margin-bottom: 10px;">
@@ -1084,11 +1088,13 @@
                 <option value="Audiobook">Audiobook</option>
             </select>
             <select id="filterStatus" style="max-width: 150px;">
-                <option value="All">All Statuses</option>
-                <option value="Unread">Unread</option>
-                <option value="Reading">Currently Reading</option>
-                <option value="Read">Read</option>
-            </select>
+			    <option value="All">All Statuses</option>
+			    <option value="Unread">Unread</option>
+			    <option value="Reading">Currently Reading</option>
+			    <option value="Read">Read</option>
+			    <option value="Incomplete">Incomplete</option>
+			    <option value="Archived">Archived</option>
+			</select>
             <select id="sortOptions" style="max-width: 150px;">
                 <option value="newest">Sort: Newest</option>
                 <option value="oldest">Sort: Oldest</option>
@@ -1223,10 +1229,12 @@
                         <div style="display: flex; flex-direction: column; gap: 5px;">
                             <label for="editStatus">Status</label>
                             <select id="editStatus">
-                                <option value="Unread">Unread</option>
-                                <option value="Reading">Currently Reading</option>
-                                <option value="Read">Read</option>
-                            </select>
+							    <option value="Unread">Unread</option>
+							    <option value="Reading">Currently Reading</option>
+							    <option value="Read">Read</option>
+							    <option value="Incomplete">Incomplete</option>
+							    <option value="Archived">Archived</option>
+							</select>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 5px;">
                             <label for="editRating">Rating (0–5)</label>
@@ -1996,8 +2004,10 @@
             // Render book rows
             groupedLibrary[key].forEach((book) => {
                 let statusClass = 'status-unread';
-                if (book.status === 'Currently Reading' || book.status === 'Reading') statusClass = 'status-reading';
-                if (book.status === 'Read') statusClass = 'status-read';
+				if (book.status === 'Currently Reading' || book.status === 'Reading') statusClass = 'status-reading';
+				else if (book.status === 'Read') statusClass = 'status-read';
+				else if (book.status === 'Incomplete') statusClass = 'status-incomplete';
+				else if (book.status === 'Archived') statusClass = 'status-archived';
 
                 if (book.ratingText === 'Unrated') book.ratingText = '';
 
@@ -2281,11 +2291,13 @@
         
         // Handle the dynamic status badge class
         const statusSpan = document.getElementById('viewStatus');
-        statusSpan.innerText = book.status;
-        statusSpan.className = 'status-badge'; 
-        if (book.status === 'Currently Reading' || book.status === 'Reading') statusSpan.classList.add('status-reading');
-        else if (book.status === 'Read') statusSpan.classList.add('status-read');
-        else statusSpan.classList.add('status-unread');
+		statusSpan.innerText = book.status;
+		statusSpan.className = 'status-badge'; 
+		if (book.status === 'Currently Reading' || book.status === 'Reading') statusSpan.classList.add('status-reading');
+		else if (book.status === 'Read') statusSpan.classList.add('status-read');
+		else if (book.status === 'Incomplete') statusSpan.classList.add('status-incomplete');
+		else if (book.status === 'Archived') statusSpan.classList.add('status-archived');
+		else statusSpan.classList.add('status-unread');
 
         // Handle Cover Rendering
         const coverContainer = document.getElementById('viewCoverContainer');
@@ -2438,17 +2450,17 @@
             const status = book.status === 'Currently Reading' ? 'Reading' : book.status;
             
             if (status === 'Read') {
-                readCount++;
-                const rating = parseInt(book.rating) || 0;
-                if (rating > 0) {
-                    totalRating += rating;
-                    ratedReadBooksCount++;
-                }
-            } else if (status === 'Reading') {
-                readingCount++;
-            } else {
-                unreadCount++; // Defaults unread logic for everything else
-            }
+			    readCount++;
+			    const rating = parseInt(book.rating) || 0;
+			    if (rating > 0) {
+			        totalRating += rating;
+			        ratedReadBooksCount++;
+			    }
+			} else if (status === 'Reading') {
+			    readingCount++;
+			} else if (status === 'Unread') {
+			    unreadCount++;
+			}
         });
 
         // Calculate Average Rating, rounding to 1 decimal place
