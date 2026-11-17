@@ -1462,6 +1462,9 @@
     let currentPage = 1;
     let booksPerPage = 25;
 
+	// Track collapsed group headers by their group name (e.g. "Tolkien, J.R.R.")
+	let collapsedGroups = new Set();
+
     // Form Elements
     const bookForm = document.getElementById('bookForm');
     const bookList = document.getElementById('bookList');
@@ -1693,23 +1696,30 @@
     }
 
     // --- Group Collapse Logic ---
-    function toggleGroup(index, element) {
-        const rows = document.querySelectorAll(`.group-items-${index}`);
-        let isCollapsed = false;
-        
-        rows.forEach(row => {
-            row.classList.toggle('hidden-row');
-            if (row.classList.contains('hidden-row')) {
-                isCollapsed = true;
-            }
-        });
-        
-        // Rotate the chevron icon
-        const icon = element.querySelector('.collapse-icon');
-        if (icon) {
-            icon.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
-        }
-    }
+    function toggleGroup(index, element, groupKey) {
+	    const rows = document.querySelectorAll(`.group-items-${index}`);
+	    let isCollapsed = false;
+	    
+	    rows.forEach(row => {
+	        row.classList.toggle('hidden-row');
+	        if (row.classList.contains('hidden-row')) {
+	            isCollapsed = true;
+	        }
+	    });
+	
+	    // Save or remove the group key from our tracking Set
+	    if (isCollapsed) {
+	        collapsedGroups.add(groupKey);
+	    } else {
+	        collapsedGroups.delete(groupKey);
+	    }
+	    
+	    // Rotate the chevron icon
+	    const icon = element.querySelector('.collapse-icon');
+	    if (icon) {
+	        icon.style.transform = isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)';
+	    }
+	}
     
     // --- Pagination Control Function ---
     function goToPage(page) {
@@ -1959,22 +1969,29 @@
             });
         }
 
-        groupKeys.forEach((key, index) => {
-            // Render the Group Header
-            if (groupByValue !== 'none' && groupedLibrary[key].length > 0) {
-                const groupRow = document.createElement('tr');
-                const count = groupedLibrary[key].length;
-                groupRow.innerHTML = `
-                    <td colspan="5" class="group-header" onclick="toggleGroup(${index}, this)" style="cursor: pointer; user-select: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span>${esc(key)} <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95em;">(${count})</span></span>
-                            <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="transition: transform 0.2s;">
-                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1 0-.708z"/>
-                            </svg>
-                        </div>
-                    </td>`;
-                bookList.appendChild(groupRow);
-            }
+		groupKeys.forEach((key, index) => {
+		    const isCollapsed = groupByValue !== 'none' && collapsedGroups.has(key);
+		
+		    // Render the Group Header
+		    if (groupByValue !== 'none' && groupedLibrary[key].length > 0) {
+		        const groupRow = document.createElement('tr');
+		        const count = groupedLibrary[key].length;
+		        groupRow.innerHTML = `
+		            <td colspan="5" class="group-header" data-group-key="${esc(key)}" style="cursor: pointer; user-select: none;">
+		                <div style="display: flex; justify-content: space-between; align-items: center;">
+		                    <span>${esc(key)} <span style="font-weight: normal; color: var(--text-muted); font-size: 0.95em;">(${count})</span></span>
+		                    <svg class="collapse-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="transition: transform 0.2s; transform: ${isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)'};">
+		                        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+		                    </svg>
+		                </div>
+		            </td>`;
+        
+        // Attach click listener safely (avoids quote-escaping issues in inline onclick)
+        const headerCell = groupRow.querySelector('.group-header');
+        headerCell.addEventListener('click', () => toggleGroup(index, headerCell, key));
+        
+        bookList.appendChild(groupRow);
+    }
 
             // Render book rows
             groupedLibrary[key].forEach((book) => {
@@ -2006,11 +2023,13 @@
                     </div>
                 `;
 
-                const mainRow = document.createElement('tr');
-                mainRow.className = `main-row group-items-${index}`;
-                
-                const actionRow = document.createElement('tr');
-                actionRow.className = `action-row group-items-${index}`;
+				const hiddenClass = isCollapsed ? ' hidden-row' : '';
+
+		        const mainRow = document.createElement('tr');
+		        mainRow.className = `main-row group-items-${index}${hiddenClass}`;
+
+		        const actionRow = document.createElement('tr');
+		        actionRow.className = `action-row group-items-${index}${hiddenClass}`;
 
                 if (viewMode === 'simple') {
                     const rawTitle = book.title || '';
@@ -2606,24 +2625,31 @@
     });
 
     // --- Bulk Group Expand/Collapse Logic ---
-    function toggleAllGroups(collapse) {
-        // Toggle book item rows
-        const allGroupRows = document.querySelectorAll('tr[class*="group-items-"]');
-        allGroupRows.forEach(row => {
-            if (collapse) {
-                row.classList.add('hidden-row');
-            } else {
-                row.classList.remove('hidden-row');
-            }
-        });
-
-        // Rotate header chevron icons
-        const allChevrons = document.querySelectorAll('.collapse-icon');
-        allChevrons.forEach(icon => {
-            icon.style.transform = collapse ? 'rotate(-90deg)' : 'rotate(0deg)';
-        });
-    }
-
+	function toggleAllGroups(collapse) {
+	    // Toggle book item rows
+	    const allGroupRows = document.querySelectorAll('tr[class*="group-items-"]');
+	    allGroupRows.forEach(row => {
+	        if (collapse) {
+	            row.classList.add('hidden-row');
+	        } else {
+	            row.classList.remove('hidden-row');
+	        }
+	    });
+	
+	    // Update chevron icons and sync the collapsedGroups Set
+	    const allHeaders = document.querySelectorAll('.group-header');
+	    allHeaders.forEach(header => {
+	        const key = header.dataset.groupKey;
+	        if (key) {
+	            if (collapse) collapsedGroups.add(key);
+	            else collapsedGroups.delete(key);
+	        }
+	        const icon = header.querySelector('.collapse-icon');
+	        if (icon) {
+	            icon.style.transform = collapse ? 'rotate(-90deg)' : 'rotate(0deg)';
+	        }
+	    });
+	}
 
     // ======================================================================
     // Cloud sync: stores the library in a private GitHub Gist (file: shelfwise.json)
